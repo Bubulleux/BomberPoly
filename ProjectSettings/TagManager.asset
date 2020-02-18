@@ -10,6 +10,7 @@ TagManager:
   - Stream
   - PlyScore
   - Bombe
+  - RoomPanel
   layers:
   - Default
   - TransparentFX

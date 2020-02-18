@@ -87,6 +87,7 @@
     <Compile Include="Assets\Script\PowerUp.cs" />
     <Compile Include="Assets\Script\PowerUPPanelle.cs" />
     <Compile Include="Assets\Script\PunManager.cs" />
+    <Compile Include="Assets\Script\RoomListe.cs" />
     <Compile Include="Assets\Script\RoomManger.cs" />
     <Compile Include="Assets\Script\SettingSender.cs" />
     <Compile Include="Assets\Script\StreamManager.cs" />
