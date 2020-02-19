@@ -15,7 +15,9 @@ public class RoomCreator : MonoBehaviour
         {
             RoomOptions _room = new RoomOptions
             {
-                MaxPlayers = byte.Parse(maxPly.text)
+                MaxPlayers = byte.Parse(maxPly.text),
+                CleanupCacheOnLeave = true
+                
             };
             PhotonNetwork.CreateRoom(nameRoom.text, _room);
 

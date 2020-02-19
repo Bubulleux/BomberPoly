@@ -32,6 +32,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
     public Stat stat = new Stat();
     public Datas dataPlayer;
+    public GameObject pauseMenu;
 
 
     void Start()
@@ -43,6 +44,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
         
         Pv.RPC("PlayerConnecte", RpcTarget.MasterClient, dataPlayer.name, PhotonNetwork.LocalPlayer.ActorNumber);
         sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
+
+        //pauseMenu.transform.Find("RoomSeting").gameObject.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     void Update()
@@ -61,11 +64,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             SceneManager.LoadSceneAsync(0);
         }
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            PhotonNetwork.LeaveRoom();
-        }
-        mainCam.SetActive(roundStat != roundInfo.play);
+        mainCam.SetActive(roundStat != roundInfo.play || Myplayer == null);
         if (Myplayer != null)
         {
             playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
@@ -79,24 +78,11 @@ public class ClientManager : MonoBehaviourPunCallbacks
             photonInfo.text = "Wait;";
         }
 
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            Debug.Log(Blocks.Count);
-            string _rsult = "";
-            foreach (KeyValuePair<int, PlayerData> _pl in allPlayer)
-            {
-                _rsult = _rsult + _pl.Value.name + ";" + _pl.Key + "\n";
-            }
-            Debug.Log(_rsult);
-        }
         allPlayer = sManag.allPlayer;
-        if (Input.GetKeyDown(KeyCode.F7))
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            CreateCubes();
-        }
-        if (Input.GetKeyDown(KeyCode.F8))
-        {
-            Debug.Log(roundStat);
+            pauseMenu.SetActive(!pauseMenu.activeSelf);
         }
     }
     public override void OnJoinedRoom()
@@ -121,11 +107,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
 
-    [PunRPC]
-    void MakeMyBlock(bool _unbreakabel, bool _wall, int _x, int _y)
-    {
-       
-    }
+    public void Disconect() => PhotonNetwork.LeaveRoom();
+
     public void CreateCubes()
     {
         foreach(GameObject go in GameObject.FindGameObjectsWithTag("Block"))

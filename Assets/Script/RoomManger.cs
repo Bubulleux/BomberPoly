@@ -57,9 +57,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         if (GameObject.FindGameObjectsWithTag("Player").Length <= 1 && !debugRound && roundStat == roundInfo.play)
         {
-            roundStat = roundInfo.end;
             GameObject _winer = GameObject.FindGameObjectWithTag("Player");
-            Pv.RPC("RoundEnd", RpcTarget.All, _winer.GetPhotonView().Owner.ActorNumber);
+            allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
             StartCoroutine(EndRound());
 
         }
@@ -78,6 +77,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     IEnumerator EndRound()
     {
+        yield return new WaitForSeconds(3f);
+        roundStat = roundInfo.end;
+        GameObject _winer = GameObject.FindGameObjectWithTag("Player");
+        Pv.RPC("RoundEnd", RpcTarget.All, _winer.GetPhotonView().Owner.ActorNumber);
         yield return new WaitForSeconds(5f);
         roundStat = roundInfo.none;
     }

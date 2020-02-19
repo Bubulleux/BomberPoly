@@ -7586,7 +7586,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: room
 --- !u!222 &1494496330
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7685,7 +7685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ff8b6ab2c073142bbcc9b687644e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelRoom: {fileID: 5484271550437592497, guid: aa2f31c21f98b534b87172746acefaaa,
+  panelRoom: {fileID: 4041531954909076974, guid: aa2f31c21f98b534b87172746acefaaa,
     type: 3}
   contente: {fileID: 1608223584}
   pun: {fileID: 756150516}
@@ -8533,7 +8533,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 10
 --- !u!222 &1810116832
 CanvasRenderer:
   m_ObjectHideFlags: 0

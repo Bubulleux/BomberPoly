@@ -1,7 +1,6 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
-    - Autodisconecte
     - Block
     - Bombe
     - ButonManager
@@ -185,8 +184,6 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 12516}
     - Class: 114
-      Script: {instanceID: 17256}
-    - Class: 114
       Script: {instanceID: 18052}
     - Class: 114
       Script: {instanceID: 18068}
@@ -278,7 +275,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11052}
     - Class: 114
-      Script: {instanceID: 11184}
+      Script: {instanceID: 11194}
     - Class: 114
       Script: {instanceID: 11470}
     - Class: 114
@@ -1376,7 +1373,7 @@ ScriptsOnlyBuild:
     className: AudioTrack
   - hash:
       serializedVersion: 2
-      Hash: d8f5b3d36e517e7db1e07885c26936a5
+      Hash: 629e425429295e0d92c6aded0e2398b3
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: ClientManager
