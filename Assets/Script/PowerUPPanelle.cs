@@ -10,6 +10,13 @@ public class PowerUPPanelle : MonoBehaviour
     public int PowerUP;
     void Update()
     {
-        Text.text = ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[PowerUP].ToString();
+        try
+        {
+            Text.text = ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[PowerUP].ToString();
+        }
+        catch
+        {
+            Text.text = "0";
+        }
     }
 }

@@ -8,11 +8,14 @@ ScriptsOnlyBuild:
     - ClientManager
     - DataManager
     - EndMenu
+    - ErrorBox
     - Explision
     - PlayerGo
     - PowerUPPanelle
     - PowerUp
     - PunManager
+    - RoomCreator
+    - RoomListe
     - RoomManger
     - StreamManager
     - Test
@@ -26,8 +29,6 @@ ScriptsOnlyBuild:
     - Photon.Pun.Demo.PunBasics.PlayerUI
     - Photon.Pun.Demo.SlotRacer.PlayerControl
     - Photon.Pun.Demo.SlotRacer.Utils.SplineWalker
-    PhotonUnityNetworking.Editor.dll:
-    - ServerSettingsInspector
     PhotonUnityNetworking.dll:
     - Photon.Pun.PhotonAnimatorView
     - Photon.Pun.PhotonHandler
@@ -45,13 +46,18 @@ ScriptsOnlyBuild:
     - UnityEngine.EventSystems.StandaloneInputModule
     - UnityEngine.UI.Button
     - UnityEngine.UI.CanvasScaler
+    - UnityEngine.UI.ContentSizeFitter
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.GridLayoutGroup
     - UnityEngine.UI.Image
     - UnityEngine.UI.InputField
+    - UnityEngine.UI.Mask
+    - UnityEngine.UI.ScrollRect
+    - UnityEngine.UI.Scrollbar
     - UnityEngine.UI.Shadow
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
+    - UnityEngine.UI.VerticalLayoutGroup
   sceneClasses:
     Assets/Scenes/Menu.unity:
     - Class: 1
@@ -101,17 +107,23 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 9994}
     - Class: 114
+      Script: {instanceID: 9996}
+    - Class: 114
       Script: {instanceID: 10052}
     - Class: 114
       Script: {instanceID: 10128}
     - Class: 114
       Script: {instanceID: 10138}
     - Class: 114
+      Script: {instanceID: 10204}
+    - Class: 114
       Script: {instanceID: 10284}
     - Class: 114
       Script: {instanceID: 10290}
     - Class: 114
       Script: {instanceID: 10390}
+    - Class: 114
+      Script: {instanceID: 10498}
     - Class: 114
       Script: {instanceID: 10528}
     - Class: 114
@@ -123,6 +135,8 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 10716}
     - Class: 114
+      Script: {instanceID: 10904}
+    - Class: 114
       Script: {instanceID: 10980}
     - Class: 114
       Script: {instanceID: 11052}
@@ -130,6 +144,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 11194}
     - Class: 114
       Script: {instanceID: 11258}
+    - Class: 114
+      Script: {instanceID: 11342}
     - Class: 114
       Script: {instanceID: 11358}
     - Class: 114
@@ -141,31 +157,39 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11492}
     - Class: 114
-      Script: {instanceID: 11730}
+      Script: {instanceID: 11572}
     - Class: 114
-      Script: {instanceID: 11748}
+      Script: {instanceID: 11732}
     - Class: 114
-      Script: {instanceID: 11758}
+      Script: {instanceID: 11750}
     - Class: 114
-      Script: {instanceID: 11896}
+      Script: {instanceID: 11760}
     - Class: 114
-      Script: {instanceID: 11904}
+      Script: {instanceID: 11898}
     - Class: 114
-      Script: {instanceID: 11940}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 12066}
+      Script: {instanceID: 11942}
     - Class: 114
-      Script: {instanceID: 12172}
+      Script: {instanceID: 12068}
     - Class: 114
-      Script: {instanceID: 12234}
+      Script: {instanceID: 12174}
     - Class: 114
-      Script: {instanceID: 12366}
+      Script: {instanceID: 12236}
     - Class: 114
-      Script: {instanceID: 12460}
+      Script: {instanceID: 12368}
     - Class: 114
-      Script: {instanceID: 12504}
+      Script: {instanceID: 12462}
     - Class: 114
-      Script: {instanceID: 12514}
+      Script: {instanceID: 12506}
+    - Class: 114
+      Script: {instanceID: 12516}
+    - Class: 114
+      Script: {instanceID: 17256}
+    - Class: 114
+      Script: {instanceID: 18052}
+    - Class: 114
+      Script: {instanceID: 18068}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -258,19 +282,19 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11470}
     - Class: 114
-      Script: {instanceID: 11884}
+      Script: {instanceID: 11886}
     - Class: 114
-      Script: {instanceID: 11896}
+      Script: {instanceID: 11898}
     - Class: 114
-      Script: {instanceID: 11904}
+      Script: {instanceID: 11906}
     - Class: 114
-      Script: {instanceID: 11940}
+      Script: {instanceID: 11942}
     - Class: 114
-      Script: {instanceID: 12358}
+      Script: {instanceID: 12360}
     - Class: 114
-      Script: {instanceID: 12366}
+      Script: {instanceID: 12368}
     - Class: 114
-      Script: {instanceID: 12460}
+      Script: {instanceID: 12462}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -1220,6 +1244,12 @@ ScriptsOnlyBuild:
     className: Physics2DRaycaster
   - hash:
       serializedVersion: 2
+      Hash: f797bd8fb1b7a3c8a714cb8119dc38b3
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: RoomListe
+  - hash:
+      serializedVersion: 2
       Hash: 11bdd61587db747672b66c52442395d8
     assemblyName: PhotonUnityNetworking.Demos.dll
     namespaceName: Photon.Pun.Demo.Cockpit
@@ -1722,6 +1752,18 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: aba34c76a888ca3751747fb0b16a768c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: RoomCreator
+  - hash:
+      serializedVersion: 2
+      Hash: 89f18ad8321627ffdb816565a483140b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ErrorBox
   platform: 5
   scenePathNames:
   - Assets/Scenes/Menu.unity

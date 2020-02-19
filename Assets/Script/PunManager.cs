@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PunManager : MonoBehaviourPunCallbacks
+public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
 {
 
     public int multiplayerSceneIndex;
@@ -16,16 +16,36 @@ public class PunManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
+       
+        
     }
     public void Update()
     {
         InfoCo = PhotonNetwork.NetworkClientState;
-        onLooby = InfoCo == ClientState.ConnectedToMasterServer;
+        onLooby = InfoCo == ClientState.JoinedLobby;
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Debug.Log(rooms.Count);
+            
+        }
+       
+    }
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("Connect To Master");
+        TypedLobby lobbyData = new TypedLobby("Proto01Lobby", LobbyType.SqlLobby);
+        PhotonNetwork.GetCustomRoomList(lobbyData, null);
+        PhotonNetwork.JoinLobby();
+    }
+    public override void OnJoinedLobby()
+    {
+        Debug.Log("Connect To lobby");
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        base.OnRoomListUpdate(roomList);
+        //base.OnRoomListUpdate(roomList);
         rooms = roomList;
+        Debug.Log("Room Find: " + roomList.Count);
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
@@ -54,7 +74,7 @@ public class PunManager : MonoBehaviourPunCallbacks
             PhotonNetwork.LoadLevel(multiplayerSceneIndex); 
         }
     }
-    //public override void OnEnable() => PhotonNetwork.AddCallbackTarget(this);
-    //public override void OnDisable() => PhotonNetwork.RemoveCallbackTarget(this);
+    public override void OnEnable() => PhotonNetwork.AddCallbackTarget(this);
+    public override void OnDisable() => PhotonNetwork.RemoveCallbackTarget(this);
 
 }

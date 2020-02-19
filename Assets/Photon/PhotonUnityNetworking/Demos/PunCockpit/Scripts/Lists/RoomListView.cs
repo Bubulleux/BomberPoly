@@ -60,7 +60,7 @@ namespace Photon.Pun.Demo.Cockpit
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
 			UpdateStatusText.text = "Updated";
-
+            Debug.Log("Room List Update");
 			if (roomList.Count == 0 && !PhotonNetwork.InLobby) {
 				ContentFeedback.text = "No Room found in lobby "+LobbyNameInputField.text+" Matching: "+SqlQueryInputField.text;
 			}

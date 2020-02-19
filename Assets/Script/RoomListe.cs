@@ -9,7 +9,6 @@ public class RoomListe : MonoBehaviour
     public GameObject panelRoom;
     public Transform contente;
     public PunManager pun;
-    public string roomJoin;
     void Start()
     {
         Initiaze();
@@ -20,7 +19,7 @@ public class RoomListe : MonoBehaviour
         
     }
 
-    void Initiaze()
+    public void Initiaze()
     {
         foreach(GameObject _go in GameObject.FindGameObjectsWithTag("RoomPanel"))
         {
@@ -32,11 +31,7 @@ public class RoomListe : MonoBehaviour
             GameObject _go = Instantiate(panelRoom, contente);
             _go.transform.Find("Name").GetComponent<Text>().text = _room.Name;
             _go.transform.Find("Player").GetComponent<Text>().text = _room.PlayerCount + "/" + _room.MaxPlayers;
-            _go.GetComponent<Button>().onClick.AddListener(delegate { SetRoomJoin(_room.Name); });
+            _go.GetComponent<Button>().onClick.AddListener(delegate { PhotonNetwork.JoinRoom(_room.Name); });
         }
-    }
-    void SetRoomJoin(string _s)
-    {
-        roomJoin = _s;
     }
 }
