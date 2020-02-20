@@ -69,14 +69,22 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
         }
-        try
+        if (Input.GetKey(KeyCode.F2))
         {
-            photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}", playerCount.ToString(), PhotonNetwork.CurrentRoom.Name, PhotonNetwork.OfflineMode, PhotonNetwork.LocalPlayer.ActorNumber, allPlayer[PhotonNetwork.MasterClient.ActorNumber].name);
+            try
+            {
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}", playerCount.ToString(), PhotonNetwork.CurrentRoom.Name, PhotonNetwork.LocalPlayer.ActorNumber, allPlayer[PhotonNetwork.MasterClient.ActorNumber].name);
+            }
+            catch
+            {
+                photonInfo.text = "Wait";
+            }
         }
-        catch
+        else
         {
-            photonInfo.text = "Wait;";
+            photonInfo.text = null;
         }
+        
 
         allPlayer = sManag.allPlayer;
 

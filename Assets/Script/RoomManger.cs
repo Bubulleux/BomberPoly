@@ -44,11 +44,15 @@ public class RoomManger : MonoBehaviourPunCallbacks
     
     void Update()
     {
-        if ((roundStat == roundInfo.none && client.playerCount >= 2) || (debugRound && Input.GetKeyDown(KeyCode.F2)))
+        if (roundStat == roundInfo.none && client.playerCount >= 2)
         {
-            StartRound();
+            StartCoroutine(StartRound(false));
         }
         
+        if (debugRound && Input.GetKeyDown(KeyCode.F3))
+        {
+            StartCoroutine(StartRound(true));
+        }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F1))
         {
             debugRound = !debugRound;
@@ -67,15 +71,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
         stream.allPlayer = allPlayer;
     }
 
-    public void StartRound()
-    {
-        roundStat = roundInfo.load;
-        sizeTerrain = (sizeTerrain % 2 == 1) ? sizeTerrain + 1 : sizeTerrain;
-        Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
-        StartCoroutine(LoadRound());
-        
-    }
-
     IEnumerator EndRound()
     {
         yield return new WaitForSeconds(3f);
@@ -85,11 +80,25 @@ public class RoomManger : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(5f);
         roundStat = roundInfo.none;
     }
-    
-    IEnumerator LoadRound()
+
+    IEnumerator StartRound(bool _debug)
     {
+        roundStat = roundInfo.load;
+        sizeTerrain = (sizeTerrain % 2 == 1) ? sizeTerrain + 1 : sizeTerrain;
+        Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         Blocks.Clear();
         Blocks = new Dictionary<Vector2, BlockClass>();
+        if (allPlayer.Count < 2)
+        {
+            int _plyInt = -1;
+            PlayerData _plyData = new PlayerData()
+            {
+                name = "Bot",
+                color = Color.black
+            };
+            allPlayer.Add(_plyInt, _plyData);
+        }
+
         for (int y = 0; y <= sizeTerrain; y++)
         {
             for (int x = 0; x <= sizeTerrain; x++)
@@ -121,7 +130,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
-            if (IsFind(_ply.Key))
+            if (IsFind(_ply.Key) || _debug)
             {
                 allPlayer[_ply.Key].ClassToOrigine();
                 Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
