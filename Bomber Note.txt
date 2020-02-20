@@ -1,0 +1,29 @@
+
+Possibiliter de modification de la room
+	size de la map
+	traverser des bombe
+
+Ajout
+	ajouter un rétrésisement de la map
+X	escape menu
+	console
+	chat
+	controle
+	hat
+	spec
+	arrondire les cube
+X	l'aisser un temps a la fin de la game
+X	changer hit box bombe 
+X	voire tout les serveur 
+X	crée un server ne pas être obliger de rejondre MAIN
+X	Faire un git
+	Ajout d'un Bot pour les teste
+	Changement du Win Menu
+
+
+Bug:
+	End Menu Win
+	bug power up
+X	Bug Bombe sur bombe
+	Bug du Debug text
+

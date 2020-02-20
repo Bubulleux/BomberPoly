@@ -59,6 +59,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             GameObject _winer = GameObject.FindGameObjectWithTag("Player");
             allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
+            roundStat = roundInfo.preEnd;
             StartCoroutine(EndRound());
 
         }
@@ -343,5 +344,5 @@ public class BlockClass
 }
 public enum roundInfo
 {
-    none, play, end, load
+    none, play, end, preEnd, load
 }

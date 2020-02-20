@@ -7685,7 +7685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ff8b6ab2c073142bbcc9b687644e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelRoom: {fileID: 4041531954909076974, guid: aa2f31c21f98b534b87172746acefaaa,
+  panelRoom: {fileID: 7867037884261004913, guid: dfb202eae47179d4e9131a25ac84e81e,
     type: 3}
   contente: {fileID: 1608223584}
   pun: {fileID: 756150516}
@@ -8162,7 +8162,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 1
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
