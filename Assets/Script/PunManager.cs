@@ -41,6 +41,7 @@ public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
     {
         Debug.Log("Connect To lobby");
     }
+
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         //base.OnRoomListUpdate(roomList);

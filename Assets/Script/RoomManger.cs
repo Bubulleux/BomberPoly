@@ -27,6 +27,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     public GameObject plyGO;
 
+    public RoomInfoClass roominfo = new RoomInfoClass();
+
 
     void Start()
     {
@@ -39,7 +41,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Pv = GetComponent<PhotonView>();
         client = GetComponent<ClientManager>();
         stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
-        
+
     }
     
     void Update()
@@ -59,7 +61,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             Debug.LogWarning("Debug Mod " + debugRound);
         }
 
-        if (GameObject.FindGameObjectsWithTag("Player").Length <= 1 && !debugRound && roundStat == roundInfo.play)
+        if (GameObject.FindGameObjectsWithTag("Player").Length <= 1  && roundStat == roundInfo.play)
         {
             GameObject _winer = GameObject.FindGameObjectWithTag("Player");
             allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
@@ -94,7 +96,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PlayerData _plyData = new PlayerData()
             {
                 name = "Bot",
-                color = Color.black
+                color = Color.black,
+                bot = true
             };
             allPlayer.Add(_plyInt, _plyData);
         }
@@ -114,6 +117,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 //yield return new WaitForFixedUpdate();
             }
         }
+        Debug.Log("Block Creat " + Blocks.Count);
         yield return new WaitForSeconds(2f);
 
         foreach(GameObject _go in GameObject.FindGameObjectsWithTag("Bombe"))
@@ -130,7 +134,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
-            if (IsFind(_ply.Key) || _debug)
+            if (IsFind(_ply.Key) || (_ply.Value.bot && _debug))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
                 Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
@@ -139,6 +143,11 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 _player.GetPhotonView().TransferOwnership(_ply.Key);
                 allPlayer[_ply.Key].alive = true;
                 allPlayer[_ply.Key].palyerGOId = _player.GetPhotonView().ViewID;
+                if (_ply.Value.bot)
+                {
+                    _player.GetComponent<PlayerGo>().enabled = false;
+                    _player.GetComponent<PlayerGo>().cam.enabled = false;
+                }
             }
             else
             {
@@ -336,6 +345,7 @@ public class PlayerData
     public float[] powerUps = new float[3];
     public bool[] PowerUpsTrueOrFalse = new bool[1];
     public int BombeCount;
+    public bool bot = false;
     public void ClassToOrigine()
     {
         powerUps = new float[3];
@@ -344,6 +354,12 @@ public class PlayerData
         alive = false;
         PowerUpsTrueOrFalse = new bool[1];
     }
+}
+public class RoomInfoClass
+{
+    public string[] intsKey = { "MapSize", "PowerUpsDensity" };
+    public int[] intsParm = { 30, 20 };
+    
 }
 public class BlockClass
 {

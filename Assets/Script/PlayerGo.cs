@@ -36,7 +36,7 @@ public class PlayerGo : MonoBehaviour
     {
         if (Pv.IsMine)
         {
-            force = 30f + (ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[1] * 7f);
+            force = 30f + (ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[1] * 3f);
             Vector3 _goTo = new Vector3(Input.GetAxis("Horizontal") * force, 0f, Input.GetAxis("Vertical") * force);
             GetComponent<Rigidbody>().AddForce(_goTo, ForceMode.Force);
         }
