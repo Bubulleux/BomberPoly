@@ -11,8 +11,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public GameObject bombe;
     public GameObject explosion;
     public ClientManager client;
-
-    public int sizeTerrain = 20;
+    
     public bool debugRound;
 
     public roundInfo roundStat = roundInfo.none;
@@ -86,7 +85,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     IEnumerator StartRound(bool _debug)
     {
         roundStat = roundInfo.load;
-        sizeTerrain = (sizeTerrain % 2 == 1) ? sizeTerrain + 1 : sizeTerrain;
+        roominfo.intsParm[0] = (roominfo.FindInt("MapSize") % 2 == 1) ? roominfo.FindInt("MapSize") + 1 : roominfo.FindInt("MapSize");
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         Blocks.Clear();
         Blocks = new Dictionary<Vector2, BlockClass>();
@@ -102,15 +101,15 @@ public class RoomManger : MonoBehaviourPunCallbacks
             allPlayer.Add(_plyInt, _plyData);
         }
 
-        for (int y = 0; y <= sizeTerrain; y++)
+        for (int y = 0; y <= roominfo.FindInt("MapSize"); y++)
         {
-            for (int x = 0; x <= sizeTerrain; x++)
+            for (int x = 0; x <= roominfo.FindInt("MapSize"); x++)
             {
-                bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == sizeTerrain) || (y == 0) || (y == sizeTerrain);
+                bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == roominfo.FindInt("MapSize")) || (y == 0) || (y == roominfo.FindInt("MapSize"));
                 //client.MakeBlock(_unbreak, Random.Range(0, 5) != 0, );
                 Blocks.Add(new Vector2Int(x, y), new BlockClass());
                 Blocks[new Vector2Int(x, y)].state = _unbreak ? BlockState.unbrekable : Random.Range(0, 5) == 0 ? BlockState.destroyer : BlockState.brekable;
-                if (Blocks[new Vector2Int(x, y)].state != BlockState.destroyer && Random.Range(0, 4) == 0)
+                if (Blocks[new Vector2Int(x, y)].state != BlockState.destroyer && Random.Range(0, 100 / (roominfo.FindInt("PowerUpsDensity"))) == 0)
                 {
                     Blocks[new Vector2Int(x, y)].PowerUp = Random.Range(1, 4);
                 }
@@ -359,6 +358,21 @@ public class RoomInfoClass
 {
     public string[] intsKey = { "MapSize", "PowerUpsDensity" };
     public int[] intsParm = { 30, 20 };
+
+    public int FindInt(string _name)
+    {
+        int _i = 0;
+        foreach(string _v in intsKey)
+        {
+            if (_name == _v)
+            {
+                return intsParm[_i];
+            }
+            _i++;
+        }
+        Debug.LogError("Var Int Not find");
+        return 0;
+    }
     
 }
 public class BlockClass
