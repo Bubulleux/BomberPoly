@@ -73,7 +73,12 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             try
             {
-                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4}", playerCount.ToString(), PhotonNetwork.CurrentRoom.Name, PhotonNetwork.LocalPlayer.ActorNumber, allPlayer[PhotonNetwork.MasterClient.ActorNumber].name, PhotonNetwork.GetPing());
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ", 
+                    playerCount.ToString(), 
+                    PhotonNetwork.CurrentRoom.Name, 
+                    PhotonNetwork.LocalPlayer.ActorNumber, 
+                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].name, 
+                    PhotonNetwork.GetPing());
             }
             catch
             {

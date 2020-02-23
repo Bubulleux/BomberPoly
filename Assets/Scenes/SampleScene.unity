@@ -1402,7 +1402,6 @@ MonoBehaviour:
   explosion: {fileID: 1419663319805470841, guid: f800e445400d1a847a42a7e8e8b4cc19,
     type: 3}
   client: {fileID: 0}
-  sizeTerrain: 15
   debugRound: 0
   roundStat: 0
   PowerUp: {fileID: 8892186197625621832, guid: 0a70f4c76f1c23d41a4c825d3d510ac5, type: 3}
@@ -2442,8 +2441,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 285.8, y: -15}
-  m_SizeDelta: {x: 571.6, y: 30}
+  m_AnchoredPosition: {x: 640, y: -15}
+  m_SizeDelta: {x: 1280, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1391202086
 MonoBehaviour:
