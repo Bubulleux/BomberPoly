@@ -154,7 +154,14 @@ public class ClientManager : MonoBehaviourPunCallbacks
     {
         endMenu.gameObject.SetActive(false);
         CreateCubes();
-        Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId).gameObject;
+        try
+        {
+            Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId).gameObject;
+        }
+        catch
+        {
+            Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId);
+        }
     }
 
     [PunRPC]

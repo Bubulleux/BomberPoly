@@ -59,16 +59,32 @@ public class RoomManger : MonoBehaviourPunCallbacks
             debugRound = !debugRound;
             Debug.LogWarning("Debug Mod " + debugRound);
         }
-
-        if (GameObject.FindGameObjectsWithTag("Player").Length <= 1  && roundStat == roundInfo.play)
+        
+        if ( roundStat == roundInfo.play)
         {
-            GameObject _winer = GameObject.FindGameObjectWithTag("Player");
-            allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
-            roundStat = roundInfo.preEnd;
-            StartCoroutine(EndRound());
-
+            int _countPly = 0;
+            foreach (KeyValuePair<int, PlayerData> _v in allPlayer)
+            {
+                if (_v.Value.alive)
+                {
+                    _countPly += 1;
+                }
+            }
+            if (_countPly < 2)
+            {
+                GameObject _winer = GameObject.FindGameObjectWithTag("Player");
+                try
+                {
+                    allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
+                }
+                catch
+                {
+                    Debug.LogWarning("PlayerWin not find");
+                }
+                roundStat = roundInfo.preEnd;
+                StartCoroutine(EndRound());
+            }
         }
-
         stream.allPlayer = allPlayer;
     }
 
@@ -87,6 +103,12 @@ public class RoomManger : MonoBehaviourPunCallbacks
         roundStat = roundInfo.load;
         roominfo.intsParm[0] = (roominfo.FindInt("MapSize") % 2 == 1) ? roominfo.FindInt("MapSize") + 1 : roominfo.FindInt("MapSize");
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
+        foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            //_go.GetPhotonView().RequestOwnership();
+            //PhotonNetwork.Destroy(_go);
+            StartCoroutine(KillPlayer(_go.GetPhotonView().ViewID));
+        }
         Blocks.Clear();
         Blocks = new Dictionary<Vector2, BlockClass>();
         if (allPlayer.Count < 2)
@@ -100,7 +122,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
             };
             allPlayer.Add(_plyInt, _plyData);
         }
-
         for (int y = 0; y <= roominfo.FindInt("MapSize"); y++)
         {
             for (int x = 0; x <= roominfo.FindInt("MapSize"); x++)
@@ -118,20 +139,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         Debug.Log("Block Creat " + Blocks.Count);
         yield return new WaitForSeconds(2f);
-
-        foreach(GameObject _go in GameObject.FindGameObjectsWithTag("Bombe"))
-        {
-            PhotonNetwork.Destroy(_go);
-        }
-        foreach(GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
-        {
-            //_go.GetPhotonView().RequestOwnership();
-            //PhotonNetwork.Destroy(_go);
-            StartCoroutine(KillPlayer(_go.GetPhotonView().ViewID));
-        }
-
-
-        foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+        foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
             if (IsFind(_ply.Key) || (_ply.Value.bot && _debug))
             {
@@ -153,6 +161,22 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 allPlayer.Remove(_ply.Key);
             }
         }
+        if (allPlayer.Count < 2)
+        {
+            roundStat = roundInfo.none;
+            Debug.LogError("Fatal Error Round Load Stoped");
+            yield return null;
+        }
+
+        foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Bombe"))
+        {
+            PhotonNetwork.Destroy(_go);
+        }
+
+        
+
+
+        
         yield return new WaitForSeconds(0.5f);
         roundStat = roundInfo.play;
         Pv.RPC("StartRound", RpcTarget.All);
