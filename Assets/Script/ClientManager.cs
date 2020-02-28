@@ -118,11 +118,14 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         base.OnMasterClientSwitched(newMasterClient);
-        PhotonNetwork.Disconnect();
+        Disconect("Master Client Switched");
     }
 
-    public void Disconect() => PhotonNetwork.LeaveRoom();
-
+    public void Disconect(string _m)
+    {
+        PhotonNetwork.LeaveRoom();
+        Debug.LogWarning(_m);
+    }
     public void CreateCubes()
     {
         foreach(GameObject go in GameObject.FindGameObjectsWithTag("Block"))
@@ -215,11 +218,19 @@ public class ClientManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void RoundEnd(int _viewId)
+    void RoundEnd(int _winer)
     {
         endMenu.gameObject.SetActive(true);
-        endMenu.winer = allPlayer[_viewId].name;
-        Debug.Log(allPlayer[_viewId].name + "won");
+        if (_winer != -1)
+        {
+            endMenu.winer = allPlayer[_winer].name;
+            Debug.Log(allPlayer[_winer].name + " Won");
+        }
+        else
+        {
+            endMenu.winer = "No Player";
+            Debug.Log("No Player Won");
+        }
         endMenu.EndGame();
         string[] tagDestroy = { "Block", "PowerUp", "Player" };
         foreach (string tag in tagDestroy)

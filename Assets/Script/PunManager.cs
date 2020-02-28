@@ -16,8 +16,6 @@ public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
-       
-        
     }
     public void Update()
     {

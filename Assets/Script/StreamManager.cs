@@ -40,6 +40,10 @@ public class StreamManager : MonoBehaviour, IPunObservable
 
             stream.SendNext(RoomManger.RoomManagerCom.roundStat);
             ClientManager.client.roundStat = RoomManger.RoomManagerCom.roundStat;
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                Debug.Log("Stream Wirting");
+            }
 
         }
         else if (stream.IsReading)
@@ -62,13 +66,12 @@ public class StreamManager : MonoBehaviour, IPunObservable
                 ClientManager.client.Blocks[JsonUtility.FromJson<Vector2>(v.Key)] = JsonUtility.FromJson<BlockClass>(v.Value);
 
             }
-            if (Input.GetKey(KeyCode.F6))
-            {
-                Debug.Log(ClientManager.client.Blocks.Count);
-            }
 
             ClientManager.client.roundStat = (roundInfo) stream.ReceiveNext();
-            
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                Debug.Log("Stream Reading");
+            }
         }
     }
 }

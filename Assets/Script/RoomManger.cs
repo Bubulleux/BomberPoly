@@ -12,7 +12,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public GameObject explosion;
     public ClientManager client;
     
-    public bool debugRound;
+    
 
     public roundInfo roundStat = roundInfo.none;
     
@@ -50,50 +50,49 @@ public class RoomManger : MonoBehaviourPunCallbacks
             StartCoroutine(StartRound(false));
         }
         
-        if (debugRound && Input.GetKeyDown(KeyCode.F3))
+        if (roominfo.debugRound && Input.GetKeyDown(KeyCode.F3))
         {
             StartCoroutine(StartRound(true));
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F1))
         {
-            debugRound = !debugRound;
-            Debug.LogWarning("Debug Mod " + debugRound);
+            roominfo.debugRound = !roominfo.debugRound;
+            Debug.LogWarning("Debug Mod " + roominfo.debugRound);
         }
         
         if ( roundStat == roundInfo.play)
         {
-            int _countPly = 0;
+            List<int> _plyAlive = new List<int>();
             foreach (KeyValuePair<int, PlayerData> _v in allPlayer)
             {
                 if (_v.Value.alive)
                 {
-                    _countPly += 1;
+                    _plyAlive.Add(_v.Key);
                 }
             }
-            if (_countPly < 2)
+            if (_plyAlive.Count < 2)
             {
-                GameObject _winer = GameObject.FindGameObjectWithTag("Player");
-                try
+                int _winer = 0;
+                if (_plyAlive.Count == 0)
                 {
-                    allPlayer[_winer.GetPhotonView().OwnerActorNr].win += 1;
+                    _winer = -1;
                 }
-                catch
+                else
                 {
-                    Debug.LogWarning("PlayerWin not find");
+                    _winer = _plyAlive[0];
                 }
                 roundStat = roundInfo.preEnd;
-                StartCoroutine(EndRound());
+                StartCoroutine(EndRound(_winer));
             }
         }
         stream.allPlayer = allPlayer;
     }
 
-    IEnumerator EndRound()
+    IEnumerator EndRound(int _winer)
     {
         yield return new WaitForSeconds(3f);
         roundStat = roundInfo.end;
-        GameObject _winer = GameObject.FindGameObjectWithTag("Player");
-        Pv.RPC("RoundEnd", RpcTarget.All, _winer.GetPhotonView().Owner.ActorNumber);
+        Pv.RPC("RoundEnd", RpcTarget.All, _winer);
         yield return new WaitForSeconds(5f);
         roundStat = roundInfo.none;
     }
@@ -173,10 +172,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PhotonNetwork.Destroy(_go);
         }
 
-        
-
-
-        
         yield return new WaitForSeconds(0.5f);
         roundStat = roundInfo.play;
         Pv.RPC("StartRound", RpcTarget.All);
@@ -382,6 +377,8 @@ public class RoomInfoClass
 {
     public string[] intsKey = { "MapSize", "PowerUpsDensity" };
     public int[] intsParm = { 30, 20 };
+    public roundInfo roundInfo = roundInfo.none;
+    public bool debugRound;
 
     public int FindInt(string _name)
     {

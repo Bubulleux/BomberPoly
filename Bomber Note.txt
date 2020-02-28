@@ -19,7 +19,7 @@ X	crée un server ne pas être obliger de rejondre MAIN
 X	Faire un git
 	Ajout d'un Bot pour les teste
 	Changement du Win Menu
-	Ajout du ping au debug mode
+X	Ajout du ping au debug mode
 
 
 
