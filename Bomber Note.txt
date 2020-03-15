@@ -20,6 +20,9 @@ X	Faire un git
 	Ajout d'un Bot pour les teste
 	Changement du Win Menu
 X	Ajout du ping au debug mode
+	Ajout Radar
+	Mode match a mort
+
 
 
 

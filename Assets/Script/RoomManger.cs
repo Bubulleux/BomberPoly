@@ -90,6 +90,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     IEnumerator EndRound(int _winer)
     {
+        stream.Update(0);
         yield return new WaitForSeconds(3f);
         roundStat = roundInfo.end;
         Pv.RPC("RoundEnd", RpcTarget.All, _winer);
@@ -174,6 +175,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(0.5f);
         roundStat = roundInfo.play;
+        stream.Update(0);
+        stream.Update(1);
         Pv.RPC("StartRound", RpcTarget.All);
     }
 
@@ -188,6 +191,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         }
         allPlayer.Remove(otherPlayer.ActorNumber);
+        stream.Update(0);
     }
 
     public bool IsFind(int _ply)
@@ -211,23 +215,27 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             Blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
         }
+        stream.Update(1);
     }
 
     [PunRPC]
     void TakePowerUp(int _why, int _what)
     {
         allPlayer[_why].powerUps[_what - 1] += 1;
+        stream.Update(0);
     }
     [PunRPC]
     void DestroyPower(int x, int y)
     {
         Blocks[new Vector2(x, y)].PowerUp = 0;
+        stream.Update(1);
     }
 
     [PunRPC]
     void PlayerAlive(int _view, bool _alive)
     {
         allPlayer[_view].alive = _alive;
+        stream.Update(0);
     }
 
     [PunRPC]
@@ -238,6 +246,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         _plyData.color = new Color(Random.value, Random.value, Random.value);
         Debug.LogFormat("<color=green> Player {0} has been conected id: {1} </color>", _name, _viewId);
         allPlayer.Add(_viewId, _plyData);
+        stream.Update(0);
     }
 
     [PunRPC]
@@ -254,6 +263,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             
         }
+        stream.Update(1);
     }
 
     [PunRPC]
@@ -278,6 +288,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             {
                 StartCoroutine(TimerBombe(_go, _owner));
             }
+            stream.Update(0);
         }
     }
     IEnumerator TimerBombe(GameObject _go, int _owner)
@@ -309,6 +320,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.Destroy(_bombe);
+        stream.Update(1);
+        stream.Update(0);
     }
 
     private void ExploseHere(Vector2 pose, int _owner)
@@ -337,6 +350,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
                 
         }
+        stream.Update(0);
     }
 
     IEnumerator KillPlayer(int _ply)
@@ -376,7 +390,7 @@ public class PlayerData
 public class RoomInfoClass
 {
     public string[] intsKey = { "MapSize", "PowerUpsDensity" };
-    public int[] intsParm = { 30, 20 };
+    public int[] intsParm = { 15, 20 };
     public roundInfo roundInfo = roundInfo.none;
     public bool debugRound;
 
