@@ -8,7 +8,6 @@ public class SettingSender : MonoBehaviour
     public GameObject settingPanel;
     public GameObject text;
     public Text nameText;
-    private string name;
     private SettingType type;
     void Start()
     {
@@ -22,7 +21,6 @@ public class SettingSender : MonoBehaviour
     }
     public void GetSetting(string _name, SettingType _type)
     {
-        name = _name;
         type = _type;
         nameText.text = _name;
         if (type == SettingType.String)

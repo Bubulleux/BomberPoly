@@ -14,6 +14,7 @@ public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
     public List<RoomInfo> rooms;
     void Start()
     {
+        Debug.ClearDeveloperConsole();
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
     }

@@ -29,6 +29,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public PhotonView Pv;
     public GameObject mainCam;
     public Transform allBlock;
+    public Button roomSetBut;
 
     public Stat stat = new Stat();
     public Datas dataPlayer;
@@ -45,7 +46,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         Pv.RPC("PlayerConnecte", RpcTarget.MasterClient, dataPlayer.name, PhotonNetwork.LocalPlayer.ActorNumber);
         sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
 
-        pauseMenu.transform.Find("RoomSeting").GetComponent<Button>().interactable = PhotonNetwork.IsMasterClient;
+        
     }
 
     void Update()
@@ -90,13 +91,20 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             photonInfo.text = null;
         }
-        
 
-        allPlayer = sManag.allPlayer;
+        try
+        {
+            allPlayer = sManag.allPlayer;
+        }
+        catch
+        {
+
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             pauseMenu.SetActive(!pauseMenu.activeSelf);
+            roomSetBut.interactable = PhotonNetwork.IsMasterClient;
         }
     }
     public override void OnJoinedRoom()
@@ -232,6 +240,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
             Debug.Log("No Player Won");
         }
         endMenu.EndGame();
+    }
+    [PunRPC]
+    void ClearScene()
+    {
         string[] tagDestroy = { "Block", "PowerUp", "Player" };
         foreach (string tag in tagDestroy)
         {
@@ -240,7 +252,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
                 Destroy(go);
             }
         }
-
     }
 
     

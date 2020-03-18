@@ -30,6 +30,7 @@ public class RoomSetting : MonoBehaviour
             roomManager.roominfo.intsParm[_i] = int.Parse(_v.text);
             _i += 1;
         }
+        roomManager.ClearScene(roundInfo.none);
         gameObject.SetActive(false);
     }
 }

@@ -34,8 +34,8 @@ public class StreamManager : MonoBehaviour, IPunObservable
             if (whyUpdate[1])
             {
                 Dictionary<string, string> BlocksJSON = new Dictionary<string, string>();
-                ClientManager.client.Blocks = RoomManger.RoomManagerCom.Blocks;
-                foreach (KeyValuePair<Vector2, BlockClass> value in RoomManger.RoomManagerCom.Blocks)
+                ClientManager.client.Blocks = RoomManger.RoomManagerCom.blocks;
+                foreach (KeyValuePair<Vector2, BlockClass> value in RoomManger.RoomManagerCom.blocks)
                 {
                     BlocksJSON[JsonUtility.ToJson(value.Key)] = JsonUtility.ToJson(value.Value);
                     if (Input.GetKey(KeyCode.F6))
@@ -48,8 +48,8 @@ public class StreamManager : MonoBehaviour, IPunObservable
             }
             
 
-            stream.SendNext(RoomManger.RoomManagerCom.roundStat);
-            ClientManager.client.roundStat = RoomManger.RoomManagerCom.roundStat;
+            stream.SendNext(RoomManger.RoomManagerCom.roominfo.roundInfo);
+            ClientManager.client.roundStat = RoomManger.RoomManagerCom.roominfo.roundInfo;
             whyUpdate = new bool[2];
         }
         else if (stream.IsReading)

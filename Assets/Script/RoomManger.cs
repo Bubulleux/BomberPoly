@@ -11,32 +11,24 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public GameObject bombe;
     public GameObject explosion;
     public ClientManager client;
-    
-    
-
-    public roundInfo roundStat = roundInfo.none;
-    
     public GameObject PowerUp;
-    
-    public static Dictionary<int,PlayerData> allPlayer = new Dictionary<int, PlayerData>();
-    public Dictionary<Vector2, BlockClass> Blocks = new Dictionary<Vector2, BlockClass>();
-
     public StreamManager stream;
-    public static RoomManger RoomManagerCom;
-
     public GameObject plyGO;
 
+    public static Dictionary<int,PlayerData> allPlayer = new Dictionary<int, PlayerData>();
+    public Dictionary<Vector2, BlockClass> blocks = new Dictionary<Vector2, BlockClass>();
     public RoomInfoClass roominfo = new RoomInfoClass();
 
+    public static RoomManger RoomManagerCom;
 
-    void Start()
+    void Awake()
     {
-        RoomManagerCom = GetComponent<RoomManger>();
         if (!PhotonNetwork.IsMasterClient)
         {
             GetComponent<RoomManger>().enabled = false;
             return;
         }
+        ClearDataRoom();
         Pv = GetComponent<PhotonView>();
         client = GetComponent<ClientManager>();
         stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
@@ -45,7 +37,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     
     void Update()
     {
-        if (roundStat == roundInfo.none && client.playerCount >= 2)
+        if (roominfo.roundInfo == roundInfo.none && client.playerCount >= 2)
         {
             StartCoroutine(StartRound(false));
         }
@@ -60,7 +52,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             Debug.LogWarning("Debug Mod " + roominfo.debugRound);
         }
         
-        if ( roundStat == roundInfo.play)
+        if ( roominfo.roundInfo == roundInfo.play)
         {
             List<int> _plyAlive = new List<int>();
             foreach (KeyValuePair<int, PlayerData> _v in allPlayer)
@@ -81,26 +73,54 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 {
                     _winer = _plyAlive[0];
                 }
-                roundStat = roundInfo.preEnd;
+                roominfo.roundInfo = roundInfo.preEnd;
                 StartCoroutine(EndRound(_winer));
             }
         }
         stream.allPlayer = allPlayer;
+
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            Debug.LogFormat("Room State {0}, Count Player {1}",
+                roominfo.roundInfo,
+                allPlayer.Count);
+        }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            ClearDataRoom();
+        }
     }
 
-    IEnumerator EndRound(int _winer)
+    public void ClearDataRoom()
+    {
+        RoomManagerCom = GetComponent<RoomManger>();
+        roominfo = new RoomInfoClass();
+        blocks.Clear();
+        ClearScene(roundInfo.none);
+    }
+
+    public IEnumerator EndRound(int _winer)
     {
         stream.Update(0);
         yield return new WaitForSeconds(3f);
-        roundStat = roundInfo.end;
         Pv.RPC("RoundEnd", RpcTarget.All, _winer);
+        ClearScene(roundInfo.end);
         yield return new WaitForSeconds(5f);
-        roundStat = roundInfo.none;
+        roominfo.roundInfo = roundInfo.none;
     }
 
+    public void ClearScene(roundInfo _r)
+    {
+        Pv.RPC("ClearScene", RpcTarget.All);
+        roominfo.roundInfo = _r;
+        foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Bombe"))
+        {
+            PhotonNetwork.Destroy(_go);
+        }
+    }
     IEnumerator StartRound(bool _debug)
     {
-        roundStat = roundInfo.load;
+        roominfo.roundInfo = roundInfo.load;
         roominfo.intsParm[0] = (roominfo.FindInt("MapSize") % 2 == 1) ? roominfo.FindInt("MapSize") + 1 : roominfo.FindInt("MapSize");
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
@@ -109,8 +129,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             //PhotonNetwork.Destroy(_go);
             StartCoroutine(KillPlayer(_go.GetPhotonView().ViewID));
         }
-        Blocks.Clear();
-        Blocks = new Dictionary<Vector2, BlockClass>();
+        blocks.Clear();
+        blocks = new Dictionary<Vector2, BlockClass>();
         if (allPlayer.Count < 2)
         {
             int _plyInt = -1;
@@ -128,16 +148,15 @@ public class RoomManger : MonoBehaviourPunCallbacks
             {
                 bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == roominfo.FindInt("MapSize")) || (y == 0) || (y == roominfo.FindInt("MapSize"));
                 //client.MakeBlock(_unbreak, Random.Range(0, 5) != 0, );
-                Blocks.Add(new Vector2Int(x, y), new BlockClass());
-                Blocks[new Vector2Int(x, y)].state = _unbreak ? BlockState.unbrekable : Random.Range(0, 5) == 0 ? BlockState.destroyer : BlockState.brekable;
-                if (Blocks[new Vector2Int(x, y)].state != BlockState.destroyer && Random.Range(0, 100 / (roominfo.FindInt("PowerUpsDensity"))) == 0)
+                blocks.Add(new Vector2Int(x, y), new BlockClass());
+                blocks[new Vector2Int(x, y)].state = _unbreak ? BlockState.unbrekable : Random.Range(0, 5) == 0 ? BlockState.destroyer : BlockState.brekable;
+                if (blocks[new Vector2Int(x, y)].state != BlockState.destroyer && Random.Range(0, 100 / (roominfo.FindInt("PowerUpsDensity"))) == 0)
                 {
-                    Blocks[new Vector2Int(x, y)].PowerUp = Random.Range(1, 4);
+                    blocks[new Vector2Int(x, y)].PowerUp = Random.Range(1, 4);
                 }
                 //yield return new WaitForFixedUpdate();
             }
         }
-        Debug.Log("Block Creat " + Blocks.Count);
         yield return new WaitForSeconds(2f);
         foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
@@ -163,7 +182,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         if (allPlayer.Count < 2)
         {
-            roundStat = roundInfo.none;
+            roominfo.roundInfo = roundInfo.none;
             Debug.LogError("Fatal Error Round Load Stoped");
             yield return null;
         }
@@ -174,7 +193,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
 
         yield return new WaitForSeconds(0.5f);
-        roundStat = roundInfo.play;
+        roominfo.roundInfo = roundInfo.play;
         stream.Update(0);
         stream.Update(1);
         Pv.RPC("StartRound", RpcTarget.All);
@@ -183,7 +202,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
-        if (roundStat == roundInfo.play)
+        if (roominfo.roundInfo == roundInfo.play)
         {
             PhotonView _pv = PhotonView.Find(allPlayer[otherPlayer.ActorNumber].palyerGOId);
             _pv.TransferOwnership(PhotonNetwork.LocalPlayer);
@@ -210,10 +229,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void DestroyBlock(int _x, int _y)
     {
-        Debug.Log(new Vector2(_x, _y) + "  " + Blocks.ContainsKey(new Vector2(_x, _y)) + "  " + Blocks.Count + "   " + PhotonNetwork.IsMasterClient);
-        if (Blocks[new Vector2(_x, _y)].state == BlockState.brekable)
+        Debug.Log(new Vector2(_x, _y) + "  " + blocks.ContainsKey(new Vector2(_x, _y)) + "  " + blocks.Count + "   " + PhotonNetwork.IsMasterClient);
+        if (blocks[new Vector2(_x, _y)].state == BlockState.brekable)
         {
-            Blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
+            blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
         }
         stream.Update(1);
     }
@@ -227,7 +246,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void DestroyPower(int x, int y)
     {
-        Blocks[new Vector2(x, y)].PowerUp = 0;
+        blocks[new Vector2(x, y)].PowerUp = 0;
         stream.Update(1);
     }
 
@@ -256,10 +275,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Vector2Int[] _blockDestroy = { _spawnPos + Vector2Int.up, _spawnPos + Vector2Int.down, _spawnPos + Vector2Int.left, _spawnPos + Vector2Int.right, _spawnPos };
         foreach (Vector2Int _posBlockDestroy in _blockDestroy)
         {
-            if (Blocks[_posBlockDestroy].state == BlockState.brekable)
+            if (blocks[_posBlockDestroy].state == BlockState.brekable)
             {
-                Blocks[_posBlockDestroy].state = BlockState.destroyer;
-                Blocks[_posBlockDestroy].PowerUp = 0;
+                blocks[_posBlockDestroy].state = BlockState.destroyer;
+                blocks[_posBlockDestroy].PowerUp = 0;
             }
             
         }
@@ -312,7 +331,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 Vector2Int _expPos = new Vector2Int(_bombPos.x, _bombPos.y) + (new Vector2Int(_dir.x, _dir.y) * i);
                 PhotonNetwork.Instantiate(explosion.name, new Vector3(_expPos.x + 0.5f, 0.3f, _expPos.y + 0.5f), Quaternion.identity);
                 ExploseHere(_expPos, _owner);
-                if (Blocks[_expPos].state != BlockState.destroyer)
+                if (blocks[_expPos].state != BlockState.destroyer)
                 {
                     Pv.RPC("DestroyBlock", RpcTarget.MasterClient, _expPos.x, _expPos.y);
                     break;

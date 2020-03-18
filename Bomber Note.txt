@@ -21,8 +21,10 @@ X	Faire un git
 	Changement du Win Menu
 X	Ajout du ping au debug mode
 	Ajout Radar
-	Mode match a mort
-
+	Life pas forcement a 1
+	Le reconstruction des block
+	Ajout d'une fonction Clear Room
+	
 
 
 
@@ -31,8 +33,9 @@ X	End Menu Win
 	bug power up
 X	Bug Bombe sur bombe
 X	Bug du Debug text
-	Les joueure ne doive pas avoir de colision avec les bombe
-	Bug bombe ajout a timer au start
+X	Les joueure ne doive pas avoir de colision avec les bombe
+X	Bug bombe ajout a timer au start
 X	Reduir la vitesse
 X	Room Seting -> Room Setting
+	Bug Co Plain de joueur
 
