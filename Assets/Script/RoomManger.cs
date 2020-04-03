@@ -37,7 +37,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     
     void Update()
     {
-        if (roominfo.roundInfo == roundInfo.none && client.playerCount >= 2)
+        if (roominfo.roundInfo == roundInfo.none && client.playerCount >= 2 && !roominfo.debugRound)
         {
             StartCoroutine(StartRound(false));
         }
@@ -120,7 +120,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
     }
     IEnumerator StartRound(bool _debug)
     {
-        roominfo.roundInfo = roundInfo.load;
+        ClearScene(roundInfo.load);
+        Debug.LogFormat("<color=blue> {0} Round Start </color>", _debug ? "Debug" :"");
         roominfo.intsParm[0] = (roominfo.FindInt("MapSize") % 2 == 1) ? roominfo.FindInt("MapSize") + 1 : roominfo.FindInt("MapSize");
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
@@ -131,7 +132,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         blocks.Clear();
         blocks = new Dictionary<Vector2, BlockClass>();
-        if (allPlayer.Count < 2)
+        if (allPlayer.Count < 3)
         {
             int _plyInt = -1;
             PlayerData _plyData = new PlayerData()
@@ -140,7 +141,11 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 color = Color.black,
                 bot = true
             };
-            allPlayer.Add(_plyInt, _plyData);
+            try
+            {
+                allPlayer.Add(_plyInt, _plyData);
+            }
+            catch { }
         }
         for (int y = 0; y <= roominfo.FindInt("MapSize"); y++)
         {
@@ -157,9 +162,12 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 //yield return new WaitForFixedUpdate();
             }
         }
+        Debug.Log(blocks.Count + " Block Loaded");
         yield return new WaitForSeconds(2f);
+        List<int> _remove = new List<int>();
         foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
+            Debug.Log(_ply.Key);
             if (IsFind(_ply.Key) || (_ply.Value.bot && _debug))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
@@ -177,19 +185,18 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             else
             {
-                allPlayer.Remove(_ply.Key);
+                _remove.Add(_ply.Key);
             }
+        }
+        foreach(int _ply in _remove)
+        {
+            allPlayer.Remove(_ply);
         }
         if (allPlayer.Count < 2)
         {
             roominfo.roundInfo = roundInfo.none;
             Debug.LogError("Fatal Error Round Load Stoped");
             yield return null;
-        }
-
-        foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Bombe"))
-        {
-            PhotonNetwork.Destroy(_go);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -262,7 +269,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         PlayerData _plyData = new PlayerData();
         _plyData.name = _name;
-        _plyData.color = new Color(Random.value, Random.value, Random.value);
+        _plyData.color = Color.HSVToRGB(Random.value, 1f, 1f);
         Debug.LogFormat("<color=green> Player {0} has been conected id: {1} </color>", _name, _viewId);
         allPlayer.Add(_viewId, _plyData);
         stream.Update(0);
@@ -380,6 +387,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(0.01f); 
         }
         PhotonNetwork.Destroy(PhotonView.Find(_ply).gameObject);
+        Pv.RPC("PlayerKilled", RpcTarget.All, _ply);
         yield return null;
     }
 

@@ -10,27 +10,30 @@ X	escape menu
 	chat
 	controle
 	hat
-	spec
+X	spec
 	arrondire les cube
 X	l'aisser un temps a la fin de la game
 X	changer hit box bombe 
 X	voire tout les serveur 
 X	crée un server ne pas être obliger de rejondre MAIN
 X	Faire un git
-	Ajout d'un Bot pour les teste
+X	Ajout d'un Bot pour les teste
 	Changement du Win Menu
 X	Ajout du ping au debug mode
 	Ajout Radar
 	Life pas forcement a 1
 	Le reconstruction des block
-	Ajout d'une fonction Clear Room
+X	Ajout d'une fonction Clear Room
+	Ajouter une option de colition
+	Skin
+	Spec Transition smoos
 	
 
 
 
 Bug:
 X	End Menu Win
-	bug power up
+X	bug power up
 X	Bug Bombe sur bombe
 X	Bug du Debug text
 X	Les joueure ne doive pas avoir de colision avec les bombe
@@ -38,4 +41,5 @@ X	Bug bombe ajout a timer au start
 X	Reduir la vitesse
 X	Room Seting -> Room Setting
 	Bug Co Plain de joueur
+	Bug Verif Quand player quit
 

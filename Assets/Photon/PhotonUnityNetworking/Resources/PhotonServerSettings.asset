@@ -58,5 +58,6 @@ MonoBehaviour:
   - DestroyPower
   - CreatBombe
   - ClearScene
+  - PlayerKilled
   DisableAutoOpenWizard: 1
   ShowSettings: 1

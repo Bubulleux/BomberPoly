@@ -65,7 +65,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             SceneManager.LoadSceneAsync(0);
         }
-        mainCam.SetActive(roundStat != roundInfo.play || Myplayer == null);
+        mainCam.SetActive((roundStat != roundInfo.play || Myplayer == null ));
+        //GetComponent<Spectator>().enabled = roundStat != roundInfo.play || Myplayer == null;
         if (Myplayer != null)
         {
             playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
@@ -136,6 +137,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
     }
     public void CreateCubes()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Blocks = RoomManger.RoomManagerCom.blocks;
+        }
         foreach(GameObject go in GameObject.FindGameObjectsWithTag("Block"))
         {
             Destroy(go);
@@ -147,7 +152,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
             Instantiate(block, new Vector3(_block.Key.x, 0f, _block.Key.y), Quaternion.identity, allBlock);
             p += string.Format("Block in x:{0} y:{1} has benne create \n", _block.Key.x, _block.Key.y);
         }
-        Debug.Log(p);
+        //Debug.Log(p);
     }
 
 
@@ -202,11 +207,11 @@ public class ClientManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void KillonePlayer(int _id)
+    void PlayerKilled(int _id)
     {
         if (Myplayer.GetPhotonView().ViewID == _id)
         {
-            PhotonNetwork.Destroy(Myplayer);
+            GetComponent<Spectator>().enabled = true;
         }
     }
 

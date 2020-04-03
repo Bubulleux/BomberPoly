@@ -93,6 +93,7 @@
     <Compile Include="Assets\Script\RoomManger.cs" />
     <Compile Include="Assets\Script\RoomSetting.cs" />
     <Compile Include="Assets\Script\SettingSender.cs" />
+    <Compile Include="Assets\Script\Spectator.cs" />
     <Compile Include="Assets\Script\StreamManager.cs" />
     <Compile Include="Assets\Script\StreamTest.cs" />
     <Compile Include="Assets\Script\Test.cs" />
