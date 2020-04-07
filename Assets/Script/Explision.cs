@@ -8,7 +8,7 @@ public class Explision : MonoBehaviour
     void Update()
     {
         size += Time.deltaTime;
-        if (size >= 1f && GetComponent<PhotonView>().IsMine)
+        if (size >= 2f && GetComponent<PhotonView>().IsMine)
         {
             //size = 1f;
             ClientManager.client.DestroyGameObj(gameObject);

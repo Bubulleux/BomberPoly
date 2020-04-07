@@ -29,10 +29,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
             return;
         }
         ClearDataRoom();
+        allPlayer.Clear();
         Pv = GetComponent<PhotonView>();
         client = GetComponent<ClientManager>();
         stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
-
     }
     
     void Update()
@@ -93,15 +93,16 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     public void ClearDataRoom()
     {
-        RoomManagerCom = GetComponent<RoomManger>();
+        RoomManagerCom = this;
         roominfo = new RoomInfoClass();
         blocks.Clear();
         ClearScene(roundInfo.none);
+        Debug.Log("<color=red> Rood's Data was clear <color>");
     }
 
     public IEnumerator EndRound(int _winer)
     {
-        stream.Update(0);
+        stream.WhyUpdate(0);
         yield return new WaitForSeconds(3f);
         Pv.RPC("RoundEnd", RpcTarget.All, _winer);
         ClearScene(roundInfo.end);
@@ -180,7 +181,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 if (_ply.Value.bot)
                 {
                     _player.GetComponent<PlayerGo>().enabled = false;
-                    _player.GetComponent<PlayerGo>().cam.enabled = false;
+                    _player.GetComponent<PlayerGo>().cam.SetActive(false);
                 }
             }
             else
@@ -201,11 +202,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(0.5f);
         roominfo.roundInfo = roundInfo.play;
-        stream.Update(0);
-        stream.Update(1);
+        stream.WhyUpdate(0);
+        stream.WhyUpdate(1);
         Pv.RPC("StartRound", RpcTarget.All);
     }
-
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
@@ -214,10 +214,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PhotonView _pv = PhotonView.Find(allPlayer[otherPlayer.ActorNumber].palyerGOId);
             _pv.TransferOwnership(PhotonNetwork.LocalPlayer);
             PhotonNetwork.Destroy(_pv.gameObject);
-
         }
         allPlayer.Remove(otherPlayer.ActorNumber);
-        stream.Update(0);
+        stream.WhyUpdate(0);
     }
 
     public bool IsFind(int _ply)
@@ -241,38 +240,39 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
         }
-        stream.Update(1);
+        stream.WhyUpdate(1);
     }
 
     [PunRPC]
     void TakePowerUp(int _why, int _what)
     {
         allPlayer[_why].powerUps[_what - 1] += 1;
-        stream.Update(0);
+        stream.WhyUpdate(0);
     }
     [PunRPC]
     void DestroyPower(int x, int y)
     {
         blocks[new Vector2(x, y)].PowerUp = 0;
-        stream.Update(1);
+        stream.WhyUpdate(1);
     }
 
     [PunRPC]
     void PlayerAlive(int _view, bool _alive)
     {
         allPlayer[_view].alive = _alive;
-        stream.Update(0);
+        stream.WhyUpdate(0);
     }
 
     [PunRPC]
-    void PlayerConnecte(string _name, int _viewId)
+    void PlayerConnecte(string _name,int _hat, int _viewId)
     {
         PlayerData _plyData = new PlayerData();
         _plyData.name = _name;
+        _plyData.hat = _hat;
         _plyData.color = Color.HSVToRGB(Random.value, 1f, 1f);
-        Debug.LogFormat("<color=green> Player {0} has been conected id: {1} </color>", _name, _viewId);
+        Debug.LogFormat("<color=green> Player {0} has been conected id: {1}, hat: {2} </color>", _name, _viewId, _hat);
         allPlayer.Add(_viewId, _plyData);
-        stream.Update(0);
+        stream.WhyUpdate(0);
     }
 
     [PunRPC]
@@ -289,7 +289,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             
         }
-        stream.Update(1);
+        stream.WhyUpdate(1);
     }
 
     [PunRPC]
@@ -314,7 +314,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             {
                 StartCoroutine(TimerBombe(_go, _owner));
             }
-            stream.Update(0);
+            stream.WhyUpdate(0);
         }
     }
     IEnumerator TimerBombe(GameObject _go, int _owner)
@@ -346,8 +346,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.Destroy(_bombe);
-        stream.Update(1);
-        stream.Update(0);
+        stream.WhyUpdate(1);
+        stream.WhyUpdate(0);
     }
 
     private void ExploseHere(Vector2 pose, int _owner)
@@ -376,7 +376,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
                 
         }
-        stream.Update(0);
+        stream.WhyUpdate(0);
     }
 
     IEnumerator KillPlayer(int _ply)
@@ -398,6 +398,7 @@ public class PlayerData
     public string name;
     public int kill;
     public int win;
+    public int hat;
     public bool alive = false;
     public int palyerGOId = -1;
     public Color color;

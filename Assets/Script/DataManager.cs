@@ -9,7 +9,6 @@ public class DataManager : MonoBehaviour
     public Datas data = new Datas();
     public void Awake()
     {
-        Debug.Log("Start");
         FileStream stream = new FileStream(Application.persistentDataPath + "/data.bin", FileMode.Open);
         BinaryFormatter formatter = new BinaryFormatter();
         string jsonData = (string)formatter.Deserialize(stream);
@@ -36,6 +35,7 @@ public class DataManager : MonoBehaviour
 public class Datas
 {
     public string name;
+    public int hat;
     public int kill;
     public int roundWin;
 }

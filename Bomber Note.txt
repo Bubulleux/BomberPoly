@@ -27,6 +27,7 @@ X	Ajout d'une fonction Clear Room
 	Ajouter une option de colition
 	Skin
 	Spec Transition smoos
+X	Ajouter du ptn de son
 	
 
 
@@ -43,3 +44,5 @@ X	Room Seting -> Room Setting
 	Bug Co Plain de joueur
 	Bug Verif Quand player quit
 
+Context:
+On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.

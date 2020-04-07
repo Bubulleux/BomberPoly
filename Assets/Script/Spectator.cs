@@ -9,7 +9,7 @@ public class Spectator : MonoBehaviour
     private int index;
     public GameObject cam;
     [SerializeField]
-    private bool freeCam = false;
+    private bool freeCam = true;
     private int y = 15;
     private void Start()
     {
@@ -39,17 +39,19 @@ public class Spectator : MonoBehaviour
             {
                 index = ClientManager.client.playerCount -1 ;
             }
+            if (ClientManager.client.playerCount == 0)
+            {
+                freeCam = true;
+            }
             try
             {
                 transform.position = ply(index).transform.position;
             }
             catch
             {
-                
                 int _i = 0;
                 while (ply(index) == null)
                 {
-                    Debug.Log("While "+ ply(index));
                     _i++;
                     index++;
                     index = index % ClientManager.client.playerCount;
@@ -60,7 +62,6 @@ public class Spectator : MonoBehaviour
                         break;
                     }
                 }
-                Debug.Log(ply(index));
             }
             
         }

@@ -88,7 +88,7 @@ public class StreamManager : MonoBehaviour, IPunObservable
         }
     }
 
-    public void Update(int _i)
+    public void WhyUpdate(int _i)
     {
         whyUpdate[_i] = true;
     }

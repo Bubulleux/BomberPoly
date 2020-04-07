@@ -10,11 +10,19 @@ public class ButonManager : MonoBehaviour
     public GameObject mainMenu;
     public GameObject setting;
     private DataManager dataManager;
+
     public InputField nameSetting;
+    public Dropdown hatSetting;
     void Start()
     {
+        Debug.Log(PlayerGo.hats.Count);
         pun = GetComponent<PunManager>();
         dataManager = GetComponent<DataManager>();
+        hatSetting.AddOptions(PlayerGo.hats);
+        //foreach(string _hat in PlayerGo.hats)
+        //{
+        //    hatSetting.options.Add(new Dropdown.OptionData(text: _hat));
+        //}
     }
     void Update()
     {
@@ -27,9 +35,14 @@ public class ButonManager : MonoBehaviour
     }
     public void OnClickSetting()
     {
-        if (dataManager.data.name != "")
+        try
         {
             nameSetting.text = dataManager.data.name;
+            hatSetting.value = dataManager.data.hat;
+        }
+        catch
+        {
+            Debug.LogError("Data Setting Not Found");
         }
         mainMenu.SetActive(false);
         setting.SetActive(true);
@@ -42,6 +55,7 @@ public class ButonManager : MonoBehaviour
     public void OnClickSave()
     {
         dataManager.data.name = nameSetting.text;
+        dataManager.data.hat = hatSetting.value;
         dataManager.Save();
         mainMenu.SetActive(true);
         setting.SetActive(false);

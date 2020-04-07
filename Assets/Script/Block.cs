@@ -39,10 +39,15 @@ public class Block : MonoBehaviour
     }
     public void OnTriggerEnter(Collider other)
     {
-        if (classe.PowerUp != 0 &  other.gameObject == ClientManager.client.Myplayer)
+        
+        if  (classe.PowerUp != 0)
         {
-            ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, classe.PowerUp);
-            ClientManager.client.Pv.RPC("DestroyPower", RpcTarget.MasterClient, BM.Vec3To2int(transform.position).x, BM.Vec3To2int(transform.position).y);
+            GetComponent<AudioSource>().Play();
+            if (other.gameObject == ClientManager.client.Myplayer)
+            {
+                ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, classe.PowerUp);
+                ClientManager.client.Pv.RPC("DestroyPower", RpcTarget.MasterClient, BM.Vec3To2int(transform.position).x, BM.Vec3To2int(transform.position).y);
+            }
         }
     }
 }

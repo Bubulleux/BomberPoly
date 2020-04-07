@@ -43,7 +43,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         dataPlayer = GetComponent<DataManager>().data;
         endMenu.gameObject.SetActive(false);
         
-        Pv.RPC("PlayerConnecte", RpcTarget.MasterClient, dataPlayer.name, PhotonNetwork.LocalPlayer.ActorNumber);
+        Pv.RPC("PlayerConnecte", RpcTarget.MasterClient, dataPlayer.name, dataPlayer.hat, PhotonNetwork.LocalPlayer.ActorNumber);
         sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
 
         
@@ -65,8 +65,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             SceneManager.LoadSceneAsync(0);
         }
-        mainCam.SetActive((roundStat != roundInfo.play || Myplayer == null ));
-        //GetComponent<Spectator>().enabled = roundStat != roundInfo.play || Myplayer == null;
+        mainCam.SetActive( Myplayer == null);
         if (Myplayer != null)
         {
             playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
@@ -108,6 +107,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
             roomSetBut.interactable = PhotonNetwork.IsMasterClient;
         }
     }
+
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
