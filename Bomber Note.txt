@@ -9,7 +9,7 @@ X	escape menu
 	console
 	chat
 	controle
-	hat
+X	hat
 X	spec
 	arrondire les cube
 X	l'aisser un temps a la fin de la game
