@@ -179,6 +179,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId);
         }
+        
     }
 
     [PunRPC]

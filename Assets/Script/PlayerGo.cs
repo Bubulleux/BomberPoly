@@ -10,12 +10,14 @@ public class PlayerGo : MonoBehaviour
     public int viewIDclient;
     public float force;
     public GameObject gfx;
+    public GameObject RobotGfx;
 
     public static readonly List<string> hats = new List<string>{ null, "CowboyHat", "Crown", "MagicianHat", "Mustache", "PoliceCap", "Sombrero", "VikingHelmet" };
     void Start()
     {
         Pv = GetComponent<PhotonView>();
         viewIDclient = ClientManager.client.GetComponent<PhotonView>().ViewID;
+        
         
     }
     
@@ -31,13 +33,18 @@ public class PlayerGo : MonoBehaviour
         {
             gfx.transform.Find("Hat").Find(_hat).gameObject.SetActive(true);
         }
-        gfx.GetComponent<Renderer>().material.color = ClientManager.client.allPlayer[Pv.Owner.ActorNumber].color;
+        RobotGfx.GetComponent<Renderer>().materials[2].color = ClientManager.client.allPlayer[Pv.Owner.ActorNumber].color;
         if (Pv.IsMine)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
             {
                 ClientManager.client.Pv.RPC("CreatBombe", RpcTarget.MasterClient, transform.position.x, transform.position.z, PhotonNetwork.LocalPlayer.ActorNumber);
             }
+        }
+        foreach (KeyValuePair<int, PlayerData> _v in ClientManager.client.allPlayer)
+        {
+            Collider _ply = PhotonView.Find(_v.Value.palyerGOId).gameObject.GetComponent<Collider>();
+            Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
         }
     }
     public void FixedUpdate()

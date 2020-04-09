@@ -43,7 +43,7 @@ public class Block : MonoBehaviour
         if  (classe.PowerUp != 0)
         {
             GetComponent<AudioSource>().Play();
-            if (other.gameObject == ClientManager.client.Myplayer)
+            if (PhotonNetwork.IsMasterClient)
             {
                 ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, classe.PowerUp);
                 ClientManager.client.Pv.RPC("DestroyPower", RpcTarget.MasterClient, BM.Vec3To2int(transform.position).x, BM.Vec3To2int(transform.position).y);
