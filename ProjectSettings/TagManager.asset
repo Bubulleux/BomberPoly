@@ -11,6 +11,7 @@ TagManager:
   - PlyScore
   - Bombe
   - RoomPanel
+  - Admix
   layers:
   - Default
   - TransparentFX
