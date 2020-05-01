@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Newtonsoft.Json;
+using System;
 public class ClientManager : MonoBehaviourPunCallbacks
 {
     public GameObject Pl;
@@ -42,8 +44,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         InvokeRepeating("SetCountPlayer", 0f, 1f);
         dataPlayer = GetComponent<DataManager>().data;
         endMenu.gameObject.SetActive(false);
-        
-        Pv.RPC("PlayerConnecte", RpcTarget.MasterClient, dataPlayer.name, dataPlayer.hat, PhotonNetwork.LocalPlayer.ActorNumber);
+        ValideConnection();
         sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
 
         
@@ -78,20 +79,19 @@ public class ClientManager : MonoBehaviourPunCallbacks
                     playerCount.ToString(), 
                     PhotonNetwork.CurrentRoom.Name, 
                     PhotonNetwork.LocalPlayer.ActorNumber, 
-                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].name, 
+                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].var.name, 
                     PhotonNetwork.GetPing(),
                     PhotonNetwork.NetworkClientState);
             }
-            catch
+            catch (Exception e)
             {
-                photonInfo.text = "Wait";
+                photonInfo.text = string.Format("Plese Wait...   Error: \"{0}\"    Connection Status: \"{1}\"", e.Message, PhotonNetwork.NetworkClientState);
             }
         }
         else
         {
             photonInfo.text = null;
         }
-
         try
         {
             allPlayer = sManag.allPlayer;
@@ -106,12 +106,26 @@ public class ClientManager : MonoBehaviourPunCallbacks
             pauseMenu.SetActive(!pauseMenu.activeSelf);
             roomSetBut.interactable = PhotonNetwork.IsMasterClient;
         }
+
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            ValideConnection();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            Pv.RPC("DebugOnMaster", RpcTarget.MasterClient, "Client to master");
+        }
     }
 
     public override void OnJoinedRoom()
     {
-        base.OnJoinedRoom();
         CreateCubes();
+    }
+
+    private void ValideConnection()
+    {
+        Pv.RPC("PlySendProfil", RpcTarget.MasterClient, dataPlayer.name, dataPlayer.hat, PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
     public void MakeBlock(bool _unbreakabel, bool _wall, Vector2Int _pos)
@@ -126,14 +140,13 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        base.OnMasterClientSwitched(newMasterClient);
         Disconect("Master Client Switched");
     }
 
     public void Disconect(string _m)
     {
         PhotonNetwork.LeaveRoom();
-        Debug.LogWarning(_m);
+        Debug.LogFormat("<color=red> {0} </color>", _m);
     }
     public void CreateCubes()
     {
@@ -145,14 +158,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             Destroy(go);
         }
-        Debug.Log(Blocks.Count);
-        string p = "";
         foreach(KeyValuePair<Vector2, BlockClass> _block in Blocks)
         {
             Instantiate(block, new Vector3(_block.Key.x, 0f, _block.Key.y), Quaternion.identity, allBlock);
-            p += string.Format("Block in x:{0} y:{1} has benne create \n", _block.Key.x, _block.Key.y);
         }
-        //Debug.Log(p);
     }
 
 
@@ -173,11 +182,11 @@ public class ClientManager : MonoBehaviourPunCallbacks
         CreateCubes();
         try
         {
-            Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId).gameObject;
+            Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
         }
         catch
         {
-            Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].palyerGOId);
+            Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId);
         }
         
     }
@@ -186,7 +195,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     void CreatPlayer()
     {
         stat = new Stat();
-        Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
+        Vector2Int _spawnPos = new Vector2Int(UnityEngine.Random.Range(1, 8) * 2 - 1, UnityEngine. Random.Range(1, 8) * 2 - 1);
         Pv.RPC("SpawnHere", RpcTarget.All, _spawnPos.x, _spawnPos.y);
         Myplayer = PhotonNetwork.Instantiate(Pl.name, new Vector3(_spawnPos.x + 0.5f, 0.5f, _spawnPos.y + 0.5f), Quaternion.identity);
         Pv.RPC("PlayerAlive", RpcTarget.MasterClient, Pv.ViewID, true);
@@ -237,8 +246,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
         endMenu.gameObject.SetActive(true);
         if (_winer != -1)
         {
-            endMenu.winer = allPlayer[_winer].name;
-            Debug.Log(allPlayer[_winer].name + " Won");
+            endMenu.winer = allPlayer[_winer].var.name;
+            Debug.Log(allPlayer[_winer].var.name + " Won");
         }
         else
         {

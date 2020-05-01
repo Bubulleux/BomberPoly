@@ -6,13 +6,13 @@ using Photon.Pun;
 public class StreamTest : MonoBehaviour, IPunObservable
 {
     [SerializeField]
-    private int rand;
+    private byte rand;
     [SerializeField]
-    private int echo;
+    private byte echo;
 
     public void Update()
     {
-        rand = Random.Range(0, 100);
+        rand = (byte)Random.Range(0, 100);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -23,7 +23,7 @@ public class StreamTest : MonoBehaviour, IPunObservable
         }
         else
         {
-            echo = (int)stream.ReceiveNext();
+            echo = (byte)stream.ReceiveNext();
         }
         
     }

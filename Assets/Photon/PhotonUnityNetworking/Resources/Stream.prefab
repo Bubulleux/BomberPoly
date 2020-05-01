@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5036191757646154132}
   - component: {fileID: 3895274684326063106}
+  - component: {fileID: -8206021754017979692}
   - component: {fileID: -351754849549386082}
   m_Layer: 0
   m_Name: Stream
@@ -44,7 +45,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee19261e39fdebc4db10254536191b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whyUpdate: 000000
+--- !u!114 &-8206021754017979692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4969268116471688361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c390d16ecd05d644c8b0c991029d117a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rand: 0
+  echo: 0
 --- !u!114 &-351754849549386082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,10 +74,11 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 3895274684326063106}
+  - {fileID: -8206021754017979692}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

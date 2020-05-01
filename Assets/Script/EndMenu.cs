@@ -20,10 +20,10 @@ public class EndMenu : MonoBehaviour
         foreach (KeyValuePair<int, PlayerData> _pl in ClientManager.client.allPlayer)
         {
             GameObject _Obj = Instantiate(PrefabScorPl, ScorBoard);
-            _Obj.transform.Find("Name").GetComponent<Text>().text = _pl.Value.name;
-            _Obj.transform.Find("Name").GetComponent<Text>().color = _pl.Value.color;
-            _Obj.transform.Find("Kill").GetComponent<Text>().text = "K :" + _pl.Value.kill.ToString();
-            _Obj.transform.Find("Win").GetComponent<Text>().text = "W :" + _pl.Value.win.ToString();
+            _Obj.transform.Find("Name").GetComponent<Text>().text = _pl.Value.var.name;
+            _Obj.transform.Find("Name").GetComponent<Text>().color = _pl.Value.var.color;
+            _Obj.transform.Find("Kill").GetComponent<Text>().text = "K :" + _pl.Value.var.kill.ToString();
+            _Obj.transform.Find("Win").GetComponent<Text>().text = "W :" + _pl.Value.var.win.ToString();
         }
     }
 }

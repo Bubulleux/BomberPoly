@@ -90,10 +90,10 @@ public class Spectator : MonoBehaviour
         {
             if (_i == _index)
             {
-                if (_v.Value.alive)
+                if (_v.Value.var.alive)
                 {
                     Debug.Log("Ply Find " + _index);
-                    return PhotonView.Find(_v.Value.palyerGOId).gameObject;
+                    return PhotonView.Find(_v.Value.var.palyerGOId).gameObject;
                 }
                 else
                 {

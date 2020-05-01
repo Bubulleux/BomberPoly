@@ -1,0 +1,52 @@
+
+Possibiliter de modification de la room
+	size de la map
+	traverser des bombe
+
+Ajout
+	ajouter un rétrésisement de la map
+X	escape menu
+	console
+	chat
+	controle
+X	hat
+X	spec
+	arrondire les cube
+X	l'aisser un temps a la fin de la game
+X	changer hit box bombe 
+X	voire tout les serveur 
+X	crée un server ne pas être obliger de rejondre MAIN
+X	Faire un git
+X	Ajout d'un Bot pour les teste
+	Changement du Win Menu
+X	Ajout du ping au debug mode
+	Ajout Radar
+	Life pas forcement a 1
+	Le reconstruction des block
+X	Ajout d'une fonction Clear Room
+	Ajouter une option de colition
+	Skin
+	Spec Transition smoos
+X	Ajouter du ptn de son
+	Ajout de addMix
+	Remake all texture with shader Graph
+
+
+Bug:
+X	End Menu Win
+X	bug power up
+X	Bug Bombe sur bombe
+X	Bug du Debug text
+X	Les joueure ne doive pas avoir de colision avec les bombe
+X	Bug bombe ajout a timer au start
+X	Reduir la vitesse
+X	Room Seting -> Room Setting
+	Bug Co Plain de joueur
+	Bug Verif Quand player quit
+GFX:
+(1/3)	3 batiment
+X	Player
+	Affiche pour pub 
+
+Context:
+On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.

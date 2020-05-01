@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Newtonsoft.Json;
 
 public class StreamManager : MonoBehaviour, IPunObservable
 {
     public  Dictionary<int, PlayerData> allPlayer = new Dictionary<int, PlayerData>();
-    public bool[] whyUpdate = new bool[2];
+    private bool[] whyUpdate = new bool[2];
     /*
      * 0: Players
      * 1: Block
@@ -16,16 +17,22 @@ public class StreamManager : MonoBehaviour, IPunObservable
         if (stream.IsWriting && PhotonNetwork.IsMasterClient)
         {
             stream.SendNext(ObjectSerialize.Serialize(whyUpdate));
+            stream.SendNext(Random.Range(100, 10000).ToString());
+            Debug.Log("IsWriting");
             byte[] bytesSteamed;
             //Players
             if (whyUpdate[0])
             {
-                Dictionary<int, string> allPlayerJSON = new Dictionary<int, string>();
-                foreach (KeyValuePair<int, PlayerData> value in allPlayer)
-                {
-                    allPlayerJSON[value.Key] = JsonUtility.ToJson(value.Value);
-                }
-                bytesSteamed = ObjectSerialize.Serialize(allPlayerJSON);
+                //Dictionary<int, string> allPlayerJSON = new Dictionary<int, string>();
+                //foreach (KeyValuePair<int, PlayerData> value in allPlayer)
+                //{
+                //    allPlayerJSON[value.Key] = JsonUtility.ToJson(value.Value);
+                //}
+                //bytesSteamed = ObjectSerialize.Serialize(allPlayerJSON);
+                //stream.SendNext(bytesSteamed);
+                string dataJson = JsonConvert.SerializeObject(allPlayer);
+                bytesSteamed = ObjectSerialize.Serialize(dataJson);
+                Debug.Log("byte streamed:" + bytesSteamed.Length);
                 stream.SendNext(bytesSteamed);
             }
             
@@ -54,18 +61,25 @@ public class StreamManager : MonoBehaviour, IPunObservable
         }
         else if (stream.IsReading)
         {
+            Debug.Log("Is Reading");
             bool[] _whyUpdate = (bool[]) ObjectSerialize.DeSerialize((byte[])stream.ReceiveNext());
+            Debug.Log((string)stream.ReceiveNext());
             byte[] bytereceive;
             //Player
             if (_whyUpdate[0])
             {
+                //bytereceive = (byte[])stream.ReceiveNext();
+                //Dictionary<int, string> allPlayerJSON = (Dictionary<int, string>)ObjectSerialize.DeSerialize(bytereceive);
+                //allPlayer.Clear();
+                //foreach (KeyValuePair<int, string> v in allPlayerJSON)
+                //{
+                //    allPlayer[v.Key] = JsonUtility.FromJson<PlayerData>(v.Value);
+                //}
                 bytereceive = (byte[])stream.ReceiveNext();
-                Dictionary<int, string> allPlayerJSON = (Dictionary<int, string>)ObjectSerialize.DeSerialize(bytereceive);
-                allPlayer.Clear();
-                foreach (KeyValuePair<int, string> v in allPlayerJSON)
-                {
-                    allPlayer[v.Key] = JsonUtility.FromJson<PlayerData>(v.Value);
-                }
+                Debug.Log("byte recevive:" + bytereceive.Length);
+                string DataJson = (string)ObjectSerialize.DeSerialize(bytereceive);
+                allPlayer = (Dictionary<int, PlayerData>)JsonConvert.DeserializeObject(DataJson, typeof(Dictionary<int, PlayerData>));
+                Debug.Log(DataJson);
             }
             
 

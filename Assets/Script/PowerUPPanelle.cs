@@ -7,12 +7,12 @@ using Photon.Pun;
 public class PowerUPPanelle : MonoBehaviour
 {
     public Text Text;
-    public int PowerUP;
+    public PowerUps PowerUP;
     void Update()
     {
         try
         {
-            Text.text = ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[PowerUP].ToString();
+            Text.text = ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUP].ToString();
         }
         catch
         {

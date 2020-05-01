@@ -28,12 +28,12 @@ public class PlayerGo : MonoBehaviour
         {
             cam.SetActive(false);
         }
-        string _hat = hats[ClientManager.client.allPlayer[Pv.Owner.ActorNumber].hat];
+        string _hat = hats[ClientManager.client.allPlayer[Pv.Owner.ActorNumber].var.hat];
         if (_hat != null)
         {
             gfx.transform.Find("Hat").Find(_hat).gameObject.SetActive(true);
         }
-        RobotGfx.GetComponent<Renderer>().materials[2].color = ClientManager.client.allPlayer[Pv.Owner.ActorNumber].color;
+        RobotGfx.GetComponent<Renderer>().materials[2].color = ClientManager.client.allPlayer[Pv.Owner.ActorNumber].var.color;
         if (Pv.IsMine)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
@@ -43,7 +43,7 @@ public class PlayerGo : MonoBehaviour
         }
         foreach (KeyValuePair<int, PlayerData> _v in ClientManager.client.allPlayer)
         {
-            Collider _ply = PhotonView.Find(_v.Value.palyerGOId).gameObject.GetComponent<Collider>();
+            Collider _ply = PhotonView.Find(_v.Value.var.palyerGOId).gameObject.GetComponent<Collider>();
             Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
         }
     }
@@ -51,7 +51,7 @@ public class PlayerGo : MonoBehaviour
     {
         if (Pv.IsMine)
         {
-            force = 30f + (ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].powerUps[1] * 3f);
+            force = 30f + ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed] * 3f);
             Vector3 _goTo = new Vector3(Input.GetAxis("Horizontal") * force, 0f, Input.GetAxis("Vertical") * force);
             GetComponent<Rigidbody>().AddForce(_goTo, ForceMode.Force);
             if (GetComponent<Rigidbody>().velocity != Vector3.zero)

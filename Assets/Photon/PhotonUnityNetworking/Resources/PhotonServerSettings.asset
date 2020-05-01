@@ -59,5 +59,7 @@ MonoBehaviour:
   - CreatBombe
   - ClearScene
   - PlayerKilled
+  - DebugOnMaster
+  - PlySendProfil
   DisableAutoOpenWizard: 1
   ShowSettings: 1

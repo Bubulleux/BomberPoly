@@ -26,9 +26,10 @@ public class Block : MonoBehaviour
         gfx.GetComponent<Renderer>().material = classe.state == BlockState.unbrekable ? unBreakabelWall : breakabelWall;
 
         powerUpGFX.SetActive(classe.PowerUp != 0 && classe.state == BlockState.destroyer);
+        GetComponent<AudioSource>().enabled = classe.PowerUp != 0 && classe.state == BlockState.destroyer;
         if (powerUpGFX.activeSelf)
         {
-            powerUpGFX.GetComponent<Renderer>().material.color = ColorPower[classe.PowerUp - 1];
+            powerUpGFX.GetComponent<Renderer>().material.color = ColorPower[(int)classe.PowerUp - 1];
 
         }
     }
@@ -45,10 +46,11 @@ public class Block : MonoBehaviour
             GetComponent<AudioSource>().Play();
             if (PhotonNetwork.IsMasterClient)
             {
-                ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, classe.PowerUp);
+                ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, (int)classe.PowerUp);
                 ClientManager.client.Pv.RPC("DestroyPower", RpcTarget.MasterClient, BM.Vec3To2int(transform.position).x, BM.Vec3To2int(transform.position).y);
             }
         }
+        
     }
 }
 public enum BlockState
@@ -56,4 +58,19 @@ public enum BlockState
     unbrekable,
     brekable,
     destroyer
+}
+
+public class BlockClass
+{
+    public BlockState state;
+    public PowerUps PowerUp = 0;
+
+}
+
+public enum PowerUps
+{
+    none,
+    speed,
+    moreBombe,
+    moreRiadusse
 }
