@@ -62,6 +62,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\BayatGames\BinaryFormatter\Examples\Scripts\Example01.cs" />
+    <Compile Include="Assets\BayatGames\BinaryFormatter\Scripts\BinaryExtensions.cs" />
+    <Compile Include="Assets\BayatGames\BinaryFormatter\Scripts\BinaryFormatter.cs" />
+    <Compile Include="Assets\BayatGames\BinaryFormatter\Scripts\BinaryObjectReader.cs" />
+    <Compile Include="Assets\BayatGames\BinaryFormatter\Scripts\BinaryObjectWriter.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextButtonTransition.cs" />
@@ -98,17 +103,20 @@
     <Compile Include="Assets\Script\StreamTest.cs" />
     <Compile Include="Assets\Script\Test.cs" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\Minimalist Sky.shader" />
+    <None Include="Assets\WanzyeeStudio\ThirdParty\SaladLab\Json.Net.Unity3D\link.xml" />
     <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\link.xml" />
+    <None Include="Assets\WanzyeeStudio\ThirdParty\SaladLab\Json.Net.Unity3D\LICENSE.txt" />
     <None Include="Assets\Photon\PhotonLibs\Photon3Unity3D.xml" />
     <None Include="Assets\Minimalist Free v2.4.2\Documentation\Readme.txt" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\LightweightRenderPipeline\Minimalist Standard LWRP.shader" />
-    <None Include="Assets\JsonDotNet\link.xml" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\LightweightRenderPipeline\Minimalist Standard LocalSpace LWRP.shader" />
     <None Include="Assets\Bomber Note.txt" />
+    <None Include="Assets\BayatGames\BinaryFormatter\Documentation\BinaryFormatter Documentation.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\readme.txt" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\BuiltInRenderPipeline\Minimalist Standard.shader" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\BuiltInRenderPipeline\Minimalist Standard LocalSpace.shader" />
+    <None Include="Assets\BayatGames\BinaryFormatter\Readme.txt" />
     <None Include="Assets\AddOns\Mg3D_Hats\README.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
     <None Include="Assets\Polygonal Particles\Assets\Shaders\GradientBackgroundShader.shader" />
@@ -349,14 +357,14 @@
     <Reference Include="UnityEngine.XRModule">
       <HintPath>G:/Unity/2019.2.17f1/Editor/Data/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/Ulysse/Documents/Unity project/BomberPoly/Assets/JsonDotNet/Assemblies/Standalone/Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Photon3Unity3D">
       <HintPath>C:/Users/Ulysse/Documents/Unity project/BomberPoly/Assets/Photon/PhotonLibs/Photon3Unity3D.dll</HintPath>
     </Reference>
     <Reference Include="websocket-sharp">
       <HintPath>C:/Users/Ulysse/Documents/Unity project/BomberPoly/Assets/Photon/PhotonLibs/WebSocket/websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:/Users/Ulysse/Documents/Unity project/BomberPoly/Assets/WanzyeeStudio/ThirdParty/SaladLab/Json.Net.Unity3D/Plugins/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>G:/Unity/2019.2.17f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -714,6 +722,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{9818175C-D989-138E-CCF3-5CDB0F37725E}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
     <ProjectReference Include="PhotonUnityNetworking.Utilities.PhotonPlayer.Editor.csproj">
       <Project>{6D90DD41-105E-7ABD-BE16-AD23933C89F7}</Project>
       <Name>PhotonUnityNetworking.Utilities.PhotonPlayer.Editor</Name>
@@ -745,6 +757,10 @@
     <ProjectReference Include="PhotonUnityNetworking.csproj">
       <Project>{48AF24A1-32E2-241E-81F6-B0846004C444}</Project>
       <Name>PhotonUnityNetworking</Name>
+    </ProjectReference>
+    <ProjectReference Include="WanzyeeStudio.Runtime.csproj">
+      <Project>{CDD431F8-EC7D-5E5E-C8D9-340A10A12815}</Project>
+      <Name>WanzyeeStudio.Runtime</Name>
     </ProjectReference>
     <ProjectReference Include="PhotonChat.csproj">
       <Project>{11DFBADD-1296-2740-7058-EF2290405AF5}</Project>

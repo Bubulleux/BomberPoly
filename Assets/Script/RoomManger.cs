@@ -33,7 +33,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         allPlayer.Clear();
         Pv = GetComponent<PhotonView>();
         client = GetComponent<ClientManager>();
-        stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
+        //stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
     }
     
     void Update()
@@ -77,7 +77,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 StartCoroutine(EndRound(_winer));
             }
         }
-        stream.allPlayer = allPlayer;
+        //stream.allPlayer = allPlayer;
 
         if (Input.GetKeyDown(KeyCode.F6))
         {
@@ -102,7 +102,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     public IEnumerator EndRound(int _winer)
     {
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
         yield return new WaitForSeconds(3f);
         Pv.RPC("RoundEnd", RpcTarget.All, _winer);
         ClearScene(roundInfo.end);
@@ -133,7 +134,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         blocks.Clear();
         blocks = new Dictionary<Vector2, BlockClass>();
-        if (allPlayer.Count < 3)
+        if (allPlayer.Count < 2)
         {
             int _plyInt = -1;
             PlayerVar _var = new PlayerVar()
@@ -165,12 +166,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 //yield return new WaitForFixedUpdate();
             }
         }
-        Debug.Log(blocks.Count + " Block Loaded");
+        //Debug.Log(blocks.Count + " Block Loaded");
         yield return new WaitForSeconds(2f);
         List<int> _remove = new List<int>();
         foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
-            Debug.Log(_ply.Key);
+            //Debug.Log(_ply.Key);
+            Debug.Log("Spawn Ply:" + _ply.Key+ " " + IsFind(_ply.Key) + "  "+ _ply.Value.var.bot);
             if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
@@ -185,6 +187,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                     _player.GetComponent<PlayerGo>().enabled = false;
                     _player.GetComponent<PlayerGo>().cam.SetActive(false);
                 }
+                Debug.Log("Spawn Ply:" + _ply.Key);
             }
             else
             {
@@ -194,6 +197,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         foreach(int _ply in _remove)
         {
             allPlayer.Remove(_ply);
+            Debug.Log("Remove Ply: " + _ply);
         }
         if (allPlayer.Count < 2)
         {
@@ -204,8 +208,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(0.5f);
         roominfo.roundInfo = roundInfo.play;
-        stream.WhyUpdate(0);
-        stream.WhyUpdate(1);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
+        //stream.WhyUpdate(1);
+        StreamSendData(StreamDataType.Map);
         Pv.RPC("StartRound", RpcTarget.All);
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -218,7 +224,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PhotonNetwork.Destroy(_pv.gameObject);
         }
         allPlayer.Remove(otherPlayer.ActorNumber);
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
 
     public bool IsFind(int _ply)
@@ -241,7 +248,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
         }
-        stream.WhyUpdate(1);
+        //stream.WhyUpdate(1);
+        StreamSendData(StreamDataType.Map);
     }
 
     [PunRPC]
@@ -249,20 +257,23 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         PowerUps _powerUp = (PowerUps)_what;
         allPlayer[_why].var.powerUps[(PowerUps)_what] = (int)allPlayer[_why].var.powerUps[(PowerUps)_what] + 1;
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
     [PunRPC]
     void DestroyPower(int x, int y)
     {
         blocks[new Vector2(x, y)].PowerUp = 0;
-        stream.WhyUpdate(1);
+        //stream.WhyUpdate(1);
+        StreamSendData(StreamDataType.Map);
     }
 
     [PunRPC]
     void PlayerAlive(int _view, bool _alive)
     {
         allPlayer[_view].var.alive = _alive;
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
 
     [PunRPC]
@@ -276,7 +287,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             allPlayer.Add(_IdPly, new PlayerData(ply));
             Debug.LogFormat("<color=green> Player Connect Name: {0}, hat: {1}, id: {2} </color>", _name, _hat, _IdPly);
         }
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
 
     [PunRPC]
@@ -293,7 +305,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             
         }
-        stream.WhyUpdate(1);
+        //stream.WhyUpdate(1);
+        StreamSendData(StreamDataType.Map);
     }
 
     [PunRPC]
@@ -315,7 +328,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             GameObject _go = PhotonNetwork.Instantiate(bombe.name, _bombePos, Quaternion.identity);
             allPlayer[_owner].var.BombeCount += 1;
             StartCoroutine(TimerBombe(_go, _owner));
-            stream.WhyUpdate(0);
+            //stream.WhyUpdate(0);
+            StreamSendData(StreamDataType.Players);
         }
     }
     IEnumerator TimerBombe(GameObject _go, int _owner)
@@ -347,8 +361,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.Destroy(_bombe);
-        stream.WhyUpdate(1);
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(1);
+        StreamSendData(StreamDataType.Map);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
 
     private void ExploseHere(Vector2 pose, int _owner)
@@ -377,7 +393,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
                 
         }
-        stream.WhyUpdate(0);
+        //stream.WhyUpdate(0);
+        StreamSendData(StreamDataType.Players);
     }
 
     IEnumerator KillPlayer(int _ply)
@@ -396,6 +413,28 @@ public class RoomManger : MonoBehaviourPunCallbacks
     void DebugOnMaster(string _msg)
     {
         Debug.Log("<color=blue> " + _msg + "</color>");
+    }
+    public void StreamSendData(StreamDataType _type)
+    {
+        switch (_type)
+        {
+            case StreamDataType.Map:
+                Dictionary<Vector2, string> _mapJson = new Dictionary<Vector2, string>();
+                foreach (KeyValuePair<Vector2, BlockClass> _ply in blocks)
+                {
+                    _mapJson.Add(_ply.Key, JsonConvert.SerializeObject(_ply.Value));
+                }
+                stream.SendData(StreamDataType.Map, JsonConvert.SerializeObject(_mapJson));
+                break;
+            case StreamDataType.Players:
+                Dictionary<int, string> _plysJson = new Dictionary<int, string>();
+                foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+                {
+                    _plysJson.Add(_ply.Key, JsonConvert.SerializeObject(_ply.Value.var));
+                }
+                stream.SendData(StreamDataType.Players, JsonConvert.SerializeObject(_plysJson));
+                break;
+        }
     }
 
 }

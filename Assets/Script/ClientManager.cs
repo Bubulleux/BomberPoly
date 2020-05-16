@@ -45,9 +45,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
         dataPlayer = GetComponent<DataManager>().data;
         endMenu.gameObject.SetActive(false);
         ValideConnection();
-        sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
-
-        
+        //sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
+        //Debug.developerConsoleVisible = true;
     }
 
     void Update()
@@ -94,7 +93,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
         try
         {
-            allPlayer = sManag.allPlayer;
+            //allPlayer = sManag.allPlayer;
         }
         catch
         {
@@ -115,6 +114,43 @@ public class ClientManager : MonoBehaviourPunCallbacks
         if (Input.GetKeyDown(KeyCode.F4))
         {
             Pv.RPC("DebugOnMaster", RpcTarget.MasterClient, "Client to master");
+        }
+        if (Input.GetKeyDown(KeyCode.F7))
+        {
+            CreateCubes();
+        }
+        if (Input.GetKeyDown(KeyCode.F8))
+        {
+            string _sp = "";
+            foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+            {
+                _sp += string.Format("Ply: {0} Name: {1} \n", _ply.Key, _ply.Value.var.name);
+            }
+            Debug.Log(_sp);
+        }
+    }
+    public void RecevingData(StreamDataType _type, string _dataJson)
+    {
+        switch (_type)
+        {
+            case StreamDataType.Map:
+                Dictionary<Vector2, string> _mapJson = (Dictionary<Vector2, string>)JsonConvert.DeserializeObject(_dataJson, typeof(Dictionary<Vector2, string>));
+                Blocks.Clear();
+                foreach(KeyValuePair<Vector2, string> _v in _mapJson)
+                {
+                    Blocks.Add(_v.Key, (BlockClass)JsonConvert.DeserializeObject(_v.Value, typeof(BlockClass)));
+                }
+                CreateCubes();
+                break;
+            case StreamDataType.Players:
+                //Debug.Log(_dataJson);
+                Dictionary<int, string> _plysJson = (Dictionary<int, string>)JsonConvert.DeserializeObject(_dataJson, typeof(Dictionary<int, string>));
+                allPlayer.Clear();
+                foreach (KeyValuePair<int, string> _v in _plysJson)
+                {
+                    allPlayer.Add(_v.Key, new PlayerData((PlayerVar)JsonConvert.DeserializeObject(_v.Value, typeof(PlayerVar))));
+                }
+                break;
         }
     }
 

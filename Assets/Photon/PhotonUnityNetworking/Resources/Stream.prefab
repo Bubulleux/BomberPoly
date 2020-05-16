@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee19261e39fdebc4db10254536191b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whyUpdate: 0000
 --- !u!114 &-8206021754017979692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,7 +75,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 2
+  Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 3895274684326063106}
