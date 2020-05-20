@@ -43,8 +43,11 @@ public class PlayerGo : MonoBehaviour
         }
         foreach (KeyValuePair<int, PlayerData> _v in ClientManager.client.allPlayer)
         {
-            //Collider _ply = PhotonView.Find(_v.Value.var.palyerGOId).gameObject.GetComponent<Collider>();
-            //Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
+            if (_v.Value.var.alive)
+            {
+                Collider _ply = PhotonView.Find(_v.Value.var.palyerGOId).gameObject.GetComponent<Collider>();
+                Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
+            }
         }
     }
     public void FixedUpdate()

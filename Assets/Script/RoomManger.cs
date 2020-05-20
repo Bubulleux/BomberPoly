@@ -97,7 +97,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         roominfo = new RoomInfoClass();
         blocks.Clear();
         ClearScene(roundInfo.none);
-        Debug.Log("<color=red> Rood's Data was clear <color>");
+        Debug.Log("<color=red> Room's Data was clear </color>");
     }
 
     public IEnumerator EndRound(int _winer)
@@ -134,6 +134,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         blocks.Clear();
         blocks = new Dictionary<Vector2, BlockClass>();
+        Debug.Log(allPlayer.Count);
         if (allPlayer.Count < 2)
         {
             int _plyInt = -1;
@@ -166,14 +167,12 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 //yield return new WaitForFixedUpdate();
             }
         }
-        //Debug.Log(blocks.Count + " Block Loaded");
         yield return new WaitForSeconds(2f);
         List<int> _remove = new List<int>();
         foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
             //Debug.Log(_ply.Key);
-            Debug.Log("Spawn Ply:" + _ply.Key+ " " + IsFind(_ply.Key) + "  "+ _ply.Value.var.bot);
-            if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug))
+            if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug && allPlayer.Count < 2))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
                 Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
@@ -187,12 +186,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
                     _player.GetComponent<PlayerGo>().enabled = false;
                     _player.GetComponent<PlayerGo>().cam.SetActive(false);
                 }
-                Debug.Log("Spawn Ply:" + _ply.Key);
             }
             else
             {
                 _remove.Add(_ply.Key);
             }
+
+            Debug.Log("Spawn Ply:" + _ply.Key + " " + IsFind(_ply.Key) + "  " + _ply.Value.var.bot+ "   "+ allPlayer[_ply.Key].var.palyerGOId);
         }
         foreach(int _ply in _remove)
         {
@@ -284,6 +284,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PlayerVar ply = new PlayerVar();
             ply.name = _name;
             ply.hat = _hat;
+            ply.color = Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f);
             allPlayer.Add(_IdPly, new PlayerData(ply));
             Debug.LogFormat("<color=green> Player Connect Name: {0}, hat: {1}, id: {2} </color>", _name, _hat, _IdPly);
         }
@@ -459,7 +460,6 @@ public class PlayerData
         var.powerUps.Add(PowerUps.moreRiadusse,0);
         var.powerUps.Add(PowerUps.speed,0);
         var.BombeCount = 0;
-        var.palyerGOId = -1;
         var.alive = false;
     }
 }

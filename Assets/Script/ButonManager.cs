@@ -15,7 +15,6 @@ public class ButonManager : MonoBehaviour
     public Dropdown hatSetting;
     void Start()
     {
-        Debug.Log(PlayerGo.hats.Count);
         pun = GetComponent<PunManager>();
         dataManager = GetComponent<DataManager>();
         hatSetting.AddOptions(PlayerGo.hats);

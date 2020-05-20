@@ -27,6 +27,11 @@ public class Spectator : MonoBehaviour
         }
         else
         {
+            if (ClientManager.client.playerCount == 0)
+            {
+                freeCam = true;
+                return;
+            }
             if (Input.GetMouseButtonDown(0))
             {
                 index++;

@@ -74,7 +74,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             try
             {
-                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4}, Connection Stat : {5} ", 
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} ", 
                     playerCount.ToString(), 
                     PhotonNetwork.CurrentRoom.Name, 
                     PhotonNetwork.LocalPlayer.ActorNumber, 
@@ -252,14 +252,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
         Pv.RPC("PlayerAlive", RpcTarget.MasterClient, Pv.ViewID, false);
     }
 
-    [PunRPC]
-    void PlayerKilled(int _id)
-    {
-        if (Myplayer.GetPhotonView().ViewID == _id)
-        {
-            GetComponent<Spectator>().enabled = true;
-        }
-    }
 
     [PunRPC]
     void ExploseHere(int _x, int _y)

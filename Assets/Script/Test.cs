@@ -16,7 +16,6 @@ public class Test : MonoBehaviour
         ply.powerUps = new Dictionary<PowerUps, object>();
         ply.powerUps.Add(PowerUps.moreBombe, 3);
         ply.color = new Color32(0,0,0,0);
-        Debug.Log(JsonConvert.SerializeObject(ply));
     }
 }
 

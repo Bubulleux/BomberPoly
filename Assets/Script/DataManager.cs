@@ -14,7 +14,6 @@ public class DataManager : MonoBehaviour
         string jsonData = (string)formatter.Deserialize(stream);
         stream.Close();
         data = JsonUtility.FromJson<Datas>(jsonData);
-        Debug.Log(jsonData);
     }
     
 
