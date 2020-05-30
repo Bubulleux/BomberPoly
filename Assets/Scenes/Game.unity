@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,9 +216,9 @@ RectTransform:
   m_Father: {fileID: 18024587}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 180, y: -17.5}
   m_SizeDelta: {x: 360, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &38431000
@@ -1852,9 +1852,9 @@ RectTransform:
   m_Father: {fileID: 18024587}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 180, y: -40}
   m_SizeDelta: {x: 360, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &689871089
@@ -4895,8 +4895,6 @@ MonoBehaviour:
     m_Options:
     - m_Text: Classic
       m_Image: {fileID: 0}
-    - m_Text: Death Match
-      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4955,7 +4953,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2017756411
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5027,9 +5025,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomManager: {fileID: 689871092}
-  intsParm:
-  - {fileID: 1493882559}
-  - {fileID: 715293339}
+  mapSize: {fileID: 1493882559}
+  powerDensity: {fileID: 715293339}
+  gameMode: {fileID: 2009149367}
 --- !u!1 &2119071007
 GameObject:
   m_ObjectHideFlags: 0
@@ -5062,8 +5060,8 @@ RectTransform:
   m_Father: {fileID: 18024587}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 180, y: -80}
   m_SizeDelta: {x: 360, y: 35}
   m_Pivot: {x: 0.5, y: 1}

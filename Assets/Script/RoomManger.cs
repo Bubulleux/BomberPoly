@@ -124,7 +124,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         ClearScene(roundInfo.load);
         Debug.LogFormat("<color=blue> {0} Round Start </color>", _debug ? "Debug" :"");
-        roominfo.intsParm[0] = (roominfo.FindInt("MapSize") % 2 == 1) ? roominfo.FindInt("MapSize") + 1 : roominfo.FindInt("MapSize");
+        roominfo.mapSize = (roominfo.mapSize % 2 == 1) ? roominfo.mapSize + 1 : roominfo.mapSize;
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
         {
@@ -152,15 +152,15 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             catch { }
         }
-        for (int y = 0; y <= roominfo.FindInt("MapSize"); y++)
+        for (int y = 0; y <= roominfo.mapSize; y++)
         {
-            for (int x = 0; x <= roominfo.FindInt("MapSize"); x++)
+            for (int x = 0; x <= roominfo.mapSize; x++)
             {
-                bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == roominfo.FindInt("MapSize")) || (y == 0) || (y == roominfo.FindInt("MapSize"));
+                bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == roominfo.mapSize) || (y == 0) || (y == roominfo.mapSize);
                 //client.MakeBlock(_unbreak, Random.Range(0, 5) != 0, );
                 blocks.Add(new Vector2Int(x, y), new BlockClass());
                 blocks[new Vector2Int(x, y)].state = _unbreak ? BlockState.unbrekable : Random.Range(0, 5) == 0 ? BlockState.destroyer : BlockState.brekable;
-                if (blocks[new Vector2Int(x, y)].state != BlockState.destroyer && Random.Range(0, 100 / (roominfo.FindInt("PowerUpsDensity"))) == 0)
+                if (blocks[new Vector2Int(x, y)].state != BlockState.destroyer && (Random.Range(0f,1f) < roominfo.powerDensity))
                 {
                     blocks[new Vector2Int(x, y)].PowerUp = (PowerUps)Random.Range(1, 4);
                 }
@@ -481,29 +481,17 @@ public struct PlayerVar
     public bool bot;
     public bool alive;
 }
-
+public enum GameMode
+{
+    classic
+}
 public class RoomInfoClass
 {
-    public string[] intsKey = { "MapSize", "PowerUpsDensity" };
-    public int[] intsParm = { 15, 20 };
+    public int mapSize = 16;
+    public float powerDensity = 0.2f;
+    public GameMode gameMode = GameMode.classic;
     public roundInfo roundInfo = roundInfo.none;
     public bool debugRound;
-    
-    public int FindInt(string _name)
-    {
-        int _i = 0;
-        foreach(string _v in intsKey)
-        {
-            if (_name == _v)
-            {
-                return intsParm[_i];
-            }
-            _i++;
-        }
-        Debug.LogError("Var Int Not find");
-        return 0;
-    }
-    
 }
 public enum roundInfo
 {

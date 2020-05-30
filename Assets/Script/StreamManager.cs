@@ -21,6 +21,7 @@ public class StreamManager : MonoBehaviour, IPunObservable
                 stream.SendNext(_dataByte.Length);
                 stream.SendNext(_dataByte);
                 streamDatas.Clear();
+                byteStreamed = _dataByte.Length;
             }
             else
             {

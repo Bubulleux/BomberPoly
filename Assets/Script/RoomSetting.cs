@@ -7,29 +7,27 @@ using UnityEngine.UI;
 public class RoomSetting : MonoBehaviour
 {
     public RoomManger roomManager;
-    public InputField[] intsParm;
+    public InputField mapSize;
+    public InputField powerDensity;
+    public Dropdown gameMode;
     void OnEnable()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             gameObject.SetActive(false);
         }
-        int _i = 0;
-        foreach(int _v in roomManager.roominfo.intsParm)
-        {
-            intsParm[_i].text = _v.ToString();
-            _i += 1;
-        }
+        mapSize.text = roomManager.roominfo.mapSize.ToString();
+        powerDensity.text = (roomManager.roominfo.powerDensity * 100f).ToString();
+        gameMode.value = (int)roomManager.roominfo.gameMode;
+        
+        
     }
 
     public void Save()
     {
-        int _i = 0;
-        foreach (InputField _v in intsParm)
-        {
-            roomManager.roominfo.intsParm[_i] = int.Parse(_v.text);
-            _i += 1;
-        }
+        roomManager.roominfo.mapSize = int.Parse(mapSize.text);
+        roomManager.roominfo.powerDensity = (int.Parse(powerDensity.text)/100f);
+        roomManager.roominfo.gameMode = (GameMode)gameMode.value;
         roomManager.ClearScene(roundInfo.none);
         gameObject.SetActive(false);
     }
