@@ -63,7 +63,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
         if (!PhotonNetwork.InRoom)
         {
-            SceneManager.LoadSceneAsync(0);
+            SceneManager.LoadSceneAsync(1);
         }
         mainCam.SetActive( Myplayer == null);
         if (Myplayer != null)
@@ -113,7 +113,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
         if (Input.GetKeyDown(KeyCode.F4))
         {
-            Pv.RPC("DebugOnMaster", RpcTarget.MasterClient, "Client to master");
+            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed], allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.moreRiadusse], allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.moreBombe]);
         }
         if (Input.GetKeyDown(KeyCode.F7))
         {
@@ -140,15 +140,15 @@ public class ClientManager : MonoBehaviourPunCallbacks
                 {
                     Blocks.Add(_v.Key, (BlockClass)JsonConvert.DeserializeObject(_v.Value, typeof(BlockClass)));
                 }
-                CreateCubes();
+                //CreateCubes();
                 break;
             case StreamDataType.Players:
-                //Debug.Log(_dataJson);
                 Dictionary<int, string> _plysJson = (Dictionary<int, string>)JsonConvert.DeserializeObject(_dataJson, typeof(Dictionary<int, string>));
                 allPlayer.Clear();
                 foreach (KeyValuePair<int, string> _v in _plysJson)
                 {
                     allPlayer.Add(_v.Key, new PlayerData((PlayerVar)JsonConvert.DeserializeObject(_v.Value, typeof(PlayerVar))));
+                    allPlayer[_v.Key].var.powerUps = (Dictionary<PowerUps, int>)JsonConvert.DeserializeObject(allPlayer[_v.Key].var.powerUpsJson, typeof(Dictionary<PowerUps, int>));
                 }
                 break;
         }

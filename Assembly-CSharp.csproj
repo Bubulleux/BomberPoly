@@ -97,6 +97,8 @@
     <Compile Include="Assets\Script\RoomListe.cs" />
     <Compile Include="Assets\Script\RoomManger.cs" />
     <Compile Include="Assets\Script\RoomSetting.cs" />
+    <Compile Include="Assets\Script\ScreenTitle.cs" />
+    <Compile Include="Assets\Script\ScreneTitle.cs" />
     <Compile Include="Assets\Script\SettingSender.cs" />
     <Compile Include="Assets\Script\Spectator.cs" />
     <Compile Include="Assets\Script\StreamManager.cs" />
@@ -111,7 +113,6 @@
     <None Include="Assets\Minimalist Free v2.4.2\Documentation\Readme.txt" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\LightweightRenderPipeline\Minimalist Standard LWRP.shader" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\LightweightRenderPipeline\Minimalist Standard LocalSpace LWRP.shader" />
-    <None Include="Assets\Bomber Note.txt" />
     <None Include="Assets\BayatGames\BinaryFormatter\Documentation\BinaryFormatter Documentation.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\readme.txt" />
     <None Include="Assets\Minimalist Free v2.4.2\Shaders\BuiltInRenderPipeline\Minimalist Standard.shader" />

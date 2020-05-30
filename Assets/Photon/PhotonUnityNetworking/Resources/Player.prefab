@@ -256,6 +256,7 @@ MonoBehaviour:
   force: 0
   gfx: {fileID: 3949681672491686037}
   RobotGfx: {fileID: 1873074378439212348}
+  deltaPos: {x: 0, y: 0, z: 0}
 --- !u!114 &3570650082850169169
 MonoBehaviour:
   m_ObjectHideFlags: 0

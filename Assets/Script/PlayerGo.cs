@@ -11,14 +11,15 @@ public class PlayerGo : MonoBehaviour
     public float force;
     public GameObject gfx;
     public GameObject RobotGfx;
+    public Vector3 deltaPos = new Vector3();
 
     public static readonly List<string> hats = new List<string>{ null, "CowboyHat", "Crown", "MagicianHat", "Mustache", "PoliceCap", "Sombrero", "VikingHelmet" };
     void Start()
     {
         Pv = GetComponent<PhotonView>();
         viewIDclient = ClientManager.client.GetComponent<PhotonView>().ViewID;
-        
-        
+
+        deltaPos = transform.position;
     }
     
     // Update is called once per frame
@@ -43,7 +44,7 @@ public class PlayerGo : MonoBehaviour
         }
         foreach (KeyValuePair<int, PlayerData> _v in ClientManager.client.allPlayer)
         {
-            if (_v.Value.var.alive)
+            if (_v.Value.var.palyerGOId != -1 && _v.Value.var.alive)
             {
                 Collider _ply = PhotonView.Find(_v.Value.var.palyerGOId).gameObject.GetComponent<Collider>();
                 Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
@@ -57,13 +58,15 @@ public class PlayerGo : MonoBehaviour
             force = 30f + ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed] * 3f);
             Vector3 _goTo = new Vector3(Input.GetAxis("Horizontal") * force, 0f, Input.GetAxis("Vertical") * force);
             GetComponent<Rigidbody>().AddForce(_goTo, ForceMode.Force);
-            if (GetComponent<Rigidbody>().velocity != Vector3.zero)
-            {
-                Quaternion _angVel = Quaternion.LookRotation(GetComponent<Rigidbody>().velocity);
-                Quaternion _ang = Quaternion.RotateTowards(gfx.transform.rotation, _angVel, Time.fixedDeltaTime * 700f);
-                gfx.transform.rotation = _ang;
-            }
-            
         }
+
+        Vector3 _vel = (transform.position - deltaPos) / Time.deltaTime;
+        if (_vel != Vector3.zero)
+        {
+            Quaternion _angVel = Quaternion.LookRotation(_vel);
+            Quaternion _ang = Quaternion.RotateTowards(gfx.transform.rotation, _angVel, Time.fixedDeltaTime * 700f);
+            gfx.transform.rotation = _ang;
+        }
+        deltaPos = transform.position;
     }
 }

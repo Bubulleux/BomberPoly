@@ -13,7 +13,7 @@ public class Test : MonoBehaviour
         PlayerVar ply = new PlayerVar();
         ply.name = "Bub";
         ply.kill = 12;
-        ply.powerUps = new Dictionary<PowerUps, object>();
+        ply.powerUps = new Dictionary<PowerUps, int>();
         ply.powerUps.Add(PowerUps.moreBombe, 3);
         ply.color = new Color32(0,0,0,0);
     }

@@ -28,9 +28,9 @@ X	Ajout d'une fonction Clear Room
 	Skin
 	Spec Transition smoos
 X	Ajouter du ptn de son
-XX	Ajout de addMix
 	Remake all texture with shader Graph
 	Screen titel
+	Refaire le système de room setting
 
 
 Bug:
@@ -44,8 +44,9 @@ X	Reduir la vitesse
 X	Room Seting -> Room Setting
 	Bug Co Plain de joueur
 	Bug Verif Quand player quit
-	Bug build ne veut pas se co
-	Bug player noire
+X	Bug build ne veut pas se co
+X	Bug player noire
+	Bug Audio Listerner
 
 GFX:
 (2/3)	3 batiment
@@ -55,27 +56,3 @@ X	Player
 Context:
 On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.
 
-PlatformNotSupportedException: Operation is not supported on this platform.
-Newtonsoft.Json.Utilities.DynamicReflectionDelegateFactory.CreateDynamicMethod (System.String name, System.Type returnType, System.Type[] parameterTypes, System.Type owner) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Utilities.DynamicReflectionDelegateFactory.CreateDefaultConstructor[T] (System.Type type) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.DefaultContractResolver.GetDefaultCreator (System.Type createdType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.DefaultContractResolver.InitializeContract (Newtonsoft.Json.Serialization.JsonContract contract) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.DefaultContractResolver.CreatePrimitiveContract (System.Type objectType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.DefaultContractResolver.CreateContract (System.Type objectType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.DefaultContractResolver.ResolveContract (System.Type type) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonContainerContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonProperty property, Newtonsoft.Json.Serialization.JsonContract& memberContract, System.Object& memberValue) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonObjectContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract collectionContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonContract valueContract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize (Newtonsoft.Json.JsonWriter jsonWriter, System.Object value, System.Type objectType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.JsonSerializer.SerializeInternal (Newtonsoft.Json.JsonWriter jsonWriter, System.Object value, System.Type objectType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.JsonSerializer.Serialize (Newtonsoft.Json.JsonWriter jsonWriter, System.Object value, System.Type objectType) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.JsonConvert.SerializeObjectInternal (System.Object value, System.Type type, Newtonsoft.Json.JsonSerializer jsonSerializer) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.JsonConvert.SerializeObject (System.Object value, System.Type type, Newtonsoft.Json.JsonSerializerSettings settings) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-Newtonsoft.Json.JsonConvert.SerializeObject (System.Object value) (at <97722d3abc9f4cf69f9e21e6770081b3>:0)
-StreamData.ToJson () (at <7733caa027d14adbb2e304eb1933b83d>:0)
-StreamManager.OnPhotonSerializeView (Photon.Pun.PhotonStream stream, Photon.Pun.PhotonMessageInfo info) (at <7733caa027d14adbb2e304eb1933b83d>:0)
-Photon.Pun.PhotonView.SerializeComponent (UnityEngine.Component component, Photon.Pun.PhotonStream stream, Photon.Pun.PhotonMessageInfo info) (at <e6d9dfd1270549bd86ad626b51e6c803>:0)
-Photon.Pun.PhotonView.SerializeView (Photon.Pun.PhotonStream stream, Photon.Pun.PhotonMessageInfo info) (at <e6d9dfd1270549bd86ad626b51e6c803>:0)
-Photon.Pun.PhotonNetwork.OnSerializeWrite (Photon.Pun.PhotonView view) (at <e6d9dfd1270549bd86ad626b51e6c803>:0)
-Photon.Pun.PhotonNetwork.RunViewUpdate () (at <e6d9dfd1270549bd86ad626b51e6c803>:0)
-Photon.Pun.PhotonHandler.LateUpdate () (at <e6d9dfd1270549bd86ad626b51e6c803>:0)

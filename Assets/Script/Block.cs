@@ -16,6 +16,7 @@ public class Block : MonoBehaviour
     public PhotonView Pv;
     public List<GameObject> allPlayerInMeTrigger;
     private BlockClass classe;
+    public AudioSource audioS;
 
     private void Update()
     {
@@ -26,7 +27,7 @@ public class Block : MonoBehaviour
         gfx.GetComponent<Renderer>().material = classe.state == BlockState.unbrekable ? unBreakabelWall : breakabelWall;
 
         powerUpGFX.SetActive(classe.PowerUp != 0 && classe.state == BlockState.destroyer);
-        GetComponent<AudioSource>().enabled = classe.PowerUp != 0 && classe.state == BlockState.destroyer;
+        //GetComponent<AudioSource>().enabled = classe.PowerUp != 0 && classe.state == BlockState.destroyer;
         if (powerUpGFX.activeSelf)
         {
             powerUpGFX.GetComponent<Renderer>().material.color = ColorPower[(int)classe.PowerUp - 1];
@@ -44,6 +45,7 @@ public class Block : MonoBehaviour
         if  (classe.PowerUp != 0)
         {
             GetComponent<AudioSource>().Play();
+            Debug.Log("PlaySound");
             if (PhotonNetwork.IsMasterClient)
             {
                 ClientManager.client.Pv.RPC("TakePowerUp", RpcTarget.MasterClient, other.gameObject.GetPhotonView().Owner.ActorNumber, (int)classe.PowerUp);

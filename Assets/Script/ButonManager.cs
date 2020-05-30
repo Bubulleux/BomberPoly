@@ -13,15 +13,18 @@ public class ButonManager : MonoBehaviour
 
     public InputField nameSetting;
     public Dropdown hatSetting;
+    public Dropdown qualitySetting;
     void Start()
     {
         pun = GetComponent<PunManager>();
         dataManager = GetComponent<DataManager>();
         hatSetting.AddOptions(PlayerGo.hats);
-        //foreach(string _hat in PlayerGo.hats)
-        //{
-        //    hatSetting.options.Add(new Dropdown.OptionData(text: _hat));
-        //}
+        List<string> _qualitys = new List<string>();
+        foreach (string _qualityName in QualitySettings.names)
+        {
+            _qualitys.Add(_qualityName);
+        }
+        qualitySetting.AddOptions(_qualitys);
     }
     void Update()
     {
@@ -38,6 +41,7 @@ public class ButonManager : MonoBehaviour
         {
             nameSetting.text = dataManager.data.name;
             hatSetting.value = dataManager.data.hat;
+            hatSetting.value = dataManager.data.quality;
         }
         catch
         {
@@ -55,16 +59,9 @@ public class ButonManager : MonoBehaviour
     {
         dataManager.data.name = nameSetting.text;
         dataManager.data.hat = hatSetting.value;
+        dataManager.data.quality = qualitySetting.value;
         dataManager.Save();
         mainMenu.SetActive(true);
         setting.SetActive(false);
     }
-    //public void OnclickGetSetting(string _name)
-    //{
-    //    if (_name == "name")
-    //    {
-    //        setttingFunc.GetSetting(_name, SettingType.String);
-    //    }
-        
-    //}
 }

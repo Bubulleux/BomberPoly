@@ -172,7 +172,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
         {
             //Debug.Log(_ply.Key);
-            if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug && allPlayer.Count < 2))
+            if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug && allPlayer.Count < 3))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
                 Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
@@ -257,7 +257,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         PowerUps _powerUp = (PowerUps)_what;
         allPlayer[_why].var.powerUps[(PowerUps)_what] = (int)allPlayer[_why].var.powerUps[(PowerUps)_what] + 1;
-        //stream.WhyUpdate(0);
+        Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[_why].var.powerUps[PowerUps.speed], allPlayer[_why].var.powerUps[PowerUps.moreRiadusse], allPlayer[_why].var.powerUps[PowerUps.moreBombe]);
         StreamSendData(StreamDataType.Players);
     }
     [PunRPC]
@@ -405,6 +405,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             yield return new WaitForSeconds(0.01f); 
         }
+        allPlayer[PhotonView.Find(_ply).Owner.ActorNumber].var.palyerGOId = -1;
         PhotonNetwork.Destroy(PhotonView.Find(_ply).gameObject);
         Pv.RPC("PlayerKilled", RpcTarget.All, _ply);
         yield return null;
@@ -431,6 +432,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 Dictionary<int, string> _plysJson = new Dictionary<int, string>();
                 foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
                 {
+                    allPlayer[_ply.Key].var.powerUpsJson = JsonConvert.SerializeObject(allPlayer[_ply.Key].var.powerUps);
                     _plysJson.Add(_ply.Key, JsonConvert.SerializeObject(_ply.Value.var));
                 }
                 stream.SendData(StreamDataType.Players, JsonConvert.SerializeObject(_plysJson));
@@ -455,7 +457,7 @@ public class PlayerData
     }
     public void ClassToOrigine()
     {
-        var.powerUps = new Dictionary<PowerUps, object>();
+        var.powerUps = new Dictionary<PowerUps, int>();
         var.powerUps.Add(PowerUps.moreBombe,0);
         var.powerUps.Add(PowerUps.moreRiadusse,0);
         var.powerUps.Add(PowerUps.speed,0);
@@ -472,7 +474,9 @@ public struct PlayerVar
     public int hat;
     public int palyerGOId;
     public Color32 color;
-    public Dictionary<PowerUps, object> powerUps;
+    [JsonIgnore]
+    public Dictionary<PowerUps, int> powerUps;
+    public string powerUpsJson;
     public int BombeCount;
     public bool bot;
     public bool alive;

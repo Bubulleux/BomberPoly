@@ -53,11 +53,12 @@ MonoBehaviour:
   unBreakabelWall: {fileID: 2100000, guid: c19eb4187f89bd645b43a4002cebe1f9, type: 2}
   breakabelWall: {fileID: 2100000, guid: 88cef0ec48c2c674ab4deb70fd5755d1, type: 2}
   ColorPower:
-  - {r: 1, g: 0, b: 0, a: 0}
   - {r: 0, g: 1, b: 1, a: 0}
   - {r: 0.509434, g: 0.509434, b: 0.509434, a: 0}
+  - {r: 1, g: 0, b: 0, a: 0}
   Pv: {fileID: 0}
   allPlayerInMeTrigger: []
+  audioS: {fileID: 8032191604504683361}
 --- !u!114 &6208774147084579853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +74,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 0
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 0}

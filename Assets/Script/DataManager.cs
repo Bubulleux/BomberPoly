@@ -14,27 +14,32 @@ public class DataManager : MonoBehaviour
         string jsonData = (string)formatter.Deserialize(stream);
         stream.Close();
         data = JsonUtility.FromJson<Datas>(jsonData);
+        VerifQuality();
     }
     
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     public void Save()
     {
         FileStream stream = new FileStream(Application.persistentDataPath + "/data.bin", FileMode.OpenOrCreate);
         BinaryFormatter formatter = new BinaryFormatter();
         formatter.Serialize(stream, JsonUtility.ToJson(data));
         stream.Close();
+        VerifQuality();
+    }
+    public void VerifQuality()
+    {
+        if (QualitySettings.GetQualityLevel() != data.quality)
+        {
+            QualitySettings.SetQualityLevel(data.quality);
+            Debug.Log("Quality level Set to " + QualitySettings.names[QualitySettings.GetQualityLevel()]);
+        }
     }
 }
 
 public class Datas
 {
-    public string name;
+    public string name = "No Name";
     public int hat;
+    public int quality;
     public int kill;
     public int roundWin;
 }
