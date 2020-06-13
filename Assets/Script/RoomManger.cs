@@ -481,7 +481,7 @@ public struct PlayerVar
     public bool bot;
     public bool alive;
 }
-public enum GameMode
+public enum GameModes
 {
     classic
 }
@@ -489,7 +489,7 @@ public class RoomInfoClass
 {
     public int mapSize = 16;
     public float powerDensity = 0.2f;
-    public GameMode gameMode = GameMode.classic;
+    public GameModes gameMode = GameModes.classic;
     public roundInfo roundInfo = roundInfo.none;
     public bool debugRound;
 }

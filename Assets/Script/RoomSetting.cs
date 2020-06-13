@@ -27,7 +27,7 @@ public class RoomSetting : MonoBehaviour
     {
         roomManager.roominfo.mapSize = int.Parse(mapSize.text);
         roomManager.roominfo.powerDensity = (int.Parse(powerDensity.text)/100f);
-        roomManager.roominfo.gameMode = (GameMode)gameMode.value;
+        roomManager.roominfo.gameMode = (GameModes)gameMode.value;
         roomManager.ClearScene(roundInfo.none);
         gameObject.SetActive(false);
     }
