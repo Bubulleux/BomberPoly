@@ -157,7 +157,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 150}
+  m_SizeDelta: {x: 0, y: 410}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &18024588
 MonoBehaviour:
@@ -1093,7 +1093,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Text: {fileID: 165585585}
-  PowerUP: 3
+  PowerUP: 0
 --- !u!114 &259715467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1465,7 +1465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Text: {fileID: 854905464}
-  PowerUP: 1
+  PowerUP: 0
 --- !u!114 &463930441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1903,7 +1903,7 @@ MonoBehaviour:
   Pv: {fileID: 689871093}
   mainCam: {fileID: 963194225}
   allBlock: {fileID: 1736085230}
-  roomSetBut: {fileID: 384461044}
+  roomSetBut: {fileID: 1433581501}
   pauseMenu: {fileID: 844139418}
 --- !u!4 &689871091
 Transform:
@@ -1936,7 +1936,7 @@ MonoBehaviour:
   bombe: {fileID: 3397431659957438820, guid: 6079d7e4d075d704e9d23c41b53cd5b1, type: 3}
   explosion: {fileID: 1419663319805470841, guid: f800e445400d1a847a42a7e8e8b4cc19,
     type: 3}
-  client: {fileID: 0}
+  client: {fileID: 689871090}
   PowerUp: {fileID: 8892186197625621832, guid: 0a70f4c76f1c23d41a4c825d3d510ac5, type: 3}
   stream: {fileID: 689871096}
   plyGO: {fileID: 6549610506780272527, guid: 44bfab08a8675bd41bbf3b476f8d7161, type: 3}
@@ -2703,7 +2703,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: 0
   cam: {fileID: 963194225}
-  freeCam: 0
+  freeCam: 1
 --- !u!54 &963194230
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3420,7 +3420,7 @@ GameObject:
   - component: {fileID: 1391202087}
   - component: {fileID: 1391202086}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4264,7 +4264,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1721809347
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4767,7 +4767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Text: {fileID: 633987596}
-  PowerUP: 2
+  PowerUP: 0
 --- !u!114 &1985308839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5027,7 +5027,7 @@ MonoBehaviour:
   roomManager: {fileID: 689871092}
   mapSize: {fileID: 1493882559}
   powerDensity: {fileID: 715293339}
-  gameMode: {fileID: 2009149367}
+  gameMode: {fileID: 0}
 --- !u!1 &2119071007
 GameObject:
   m_ObjectHideFlags: 0

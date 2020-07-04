@@ -88,7 +88,6 @@
     <Compile Include="Assets\Script\EndMenu.cs" />
     <Compile Include="Assets\Script\ErrorBox.cs" />
     <Compile Include="Assets\Script\Explision.cs" />
-    <Compile Include="Assets\Script\GameMode.cs" />
     <Compile Include="Assets\Script\ObjectSerialize.cs" />
     <Compile Include="Assets\Script\PlayerGo.cs" />
     <Compile Include="Assets\Script\PowerUp.cs" />

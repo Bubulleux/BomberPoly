@@ -4,7 +4,7 @@ X	size de la map
 	traverser des bombe
 
 Ajout
-	ajouter un rétrésisement de la map
+X	ajouter un rétrésisement de la map
 X	escape menu
 	console
 	chat

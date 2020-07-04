@@ -35,7 +35,22 @@ public class RoomManger : MonoBehaviourPunCallbacks
         client = GetComponent<ClientManager>();
         //stream = PhotonNetwork.Instantiate("Stream", Vector3.zero, Quaternion.identity).GetComponent<StreamManager>();
     }
-    
+
+    /*
+     * F1: Debug mode
+     * F2: Shrinking map
+     * F3: Lanche Game
+     * F4: Print Cooldown
+     * F5: Clear Data Room
+     * F6: Print Room State
+     * F7:
+     * F8:
+     * F9:
+     * F10:
+     * F11:
+     * F12:
+     */ 
+
     void Update()
     {
         if (roominfo.roundInfo == roundInfo.none && client.playerCount >= 2 && !roominfo.debugRound)
@@ -76,6 +91,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 roominfo.roundInfo = roundInfo.preEnd;
                 StartCoroutine(EndRound(_winer));
             }
+            if (roominfo.cooldown <= 0f)
+            {
+                roominfo.shrinking++;
+                MapShrinking(roominfo.shrinking);
+                roominfo.cooldown = 15f;
+            }
+            roominfo.cooldown -= Time.deltaTime;
         }
         //stream.allPlayer = allPlayer;
 
@@ -88,6 +110,14 @@ public class RoomManger : MonoBehaviourPunCallbacks
         if (Input.GetKeyDown(KeyCode.F5))
         {
             ClearDataRoom();
+        }
+        if (roominfo.debugRound && Input.GetKeyDown(KeyCode.F2))
+        {
+            MapShrinking(2);
+        }
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            Debug.LogFormat("Cooldown: {0}, Shrinking: {1}", roominfo.cooldown, roominfo.shrinking);
         }
     }
 
@@ -411,6 +441,34 @@ public class RoomManger : MonoBehaviourPunCallbacks
         yield return null;
     }
 
+    void MapShrinking(int _shrinking)
+    {
+        for(int x = 0; x <= roominfo.mapSize; x++)
+        {
+            for (int y = 0; y <= roominfo.mapSize; y++)
+            {
+                bool _xAct = x <= _shrinking || x >= roominfo.mapSize - _shrinking;
+                bool _yAct = y <= _shrinking || y >= roominfo.mapSize - _shrinking;
+                if (_xAct || _yAct)
+                {
+                    blocks[new Vector2Int(x, y)].state = BlockState.unbrekable;
+                    foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+                    {
+                        if (_ply.Value.var.alive)
+                        {
+                            bool _die = BM.Vec3To2int(PhotonView.Find(_ply.Value.var.palyerGOId).transform.position) == new Vector2Int(x, y);
+                            if (_die)
+                            {
+                                StartCoroutine(KillPlayer(_ply.Value.var.palyerGOId));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        StreamSendData(StreamDataType.Map);
+    }
+
     [PunRPC]
     void DebugOnMaster(string _msg)
     {
@@ -487,11 +545,13 @@ public enum GameModes
 }
 public class RoomInfoClass
 {
-    public int mapSize = 16;
+    public int mapSize = 20;
     public float powerDensity = 0.2f;
     public GameModes gameMode = GameModes.classic;
     public roundInfo roundInfo = roundInfo.none;
     public bool debugRound;
+    public float cooldown = 10f;
+    public int shrinking = 0;
 }
 public enum roundInfo
 {
