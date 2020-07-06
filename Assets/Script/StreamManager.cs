@@ -68,5 +68,6 @@ public class StreamManager : MonoBehaviour, IPunObservable
 public enum StreamDataType
 {
     Players,
-    Map
+    Map,
+    Room
 }

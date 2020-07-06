@@ -36,6 +36,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public Stat stat = new Stat();
     public Datas dataPlayer;
     public GameObject pauseMenu;
+    public RoomInfoClass roomInfo;
 
 
     void Start()
@@ -74,13 +75,14 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             try
             {
-                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} ", 
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} , time {6}", 
                     playerCount.ToString(), 
                     PhotonNetwork.CurrentRoom.Name, 
                     PhotonNetwork.LocalPlayer.ActorNumber, 
                     allPlayer[PhotonNetwork.MasterClient.ActorNumber].var.name, 
                     PhotonNetwork.GetPing(),
-                    PhotonNetwork.NetworkClientState);
+                    PhotonNetwork.NetworkClientState,
+                    roomInfo.cooldown);
             }
             catch (Exception e)
             {
@@ -105,28 +107,20 @@ public class ClientManager : MonoBehaviourPunCallbacks
             pauseMenu.SetActive(!pauseMenu.activeSelf);
             roomSetBut.interactable = PhotonNetwork.IsMasterClient;
         }
-
         if (Input.GetKeyDown(KeyCode.F5))
-        {
-            ValideConnection();
-        }
-
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed], allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.moreRiadusse], allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.moreBombe]);
-        }
-        if (Input.GetKeyDown(KeyCode.F7))
         {
             CreateCubes();
         }
-        if (Input.GetKeyDown(KeyCode.F8))
+        if (Input.GetKeyDown(KeyCode.F4))
         {
-            string _sp = "";
-            foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
             {
-                _sp += string.Format("Ply: {0} Name: {1} \n", _ply.Key, _ply.Value.var.name);
+                Debug.LogFormat("Ply: {0} alive {1}", _ply.Key, _ply.Value.var.alive);
             }
-            Debug.Log(_sp);
+        }
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            allPlayer[1].var.alive = true;
         }
     }
     public void RecevingData(StreamDataType _type, string _dataJson)
@@ -151,6 +145,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
                     allPlayer[_v.Key].var.powerUps = (Dictionary<PowerUps, int>)JsonConvert.DeserializeObject(allPlayer[_v.Key].var.powerUpsJson, typeof(Dictionary<PowerUps, int>));
                 }
                 break;
+            case StreamDataType.Room:
+                roomInfo = (RoomInfoClass)JsonConvert.DeserializeObject(_dataJson, typeof(RoomInfoClass));
+                break;
+                
         }
     }
 

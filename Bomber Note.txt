@@ -31,6 +31,14 @@ X	Ajouter du ptn de son
 	Remake all texture with shader Graph
 X	Screen titel
 X	Refaire le système de room setting
+	Separer RoomManager en plusieur code
+	Animation Block
+	Piège
+	killLog
+	Mistery box
+		tp
+		Mega bombe
+	dic block to float[,]
 
 
 Bug:

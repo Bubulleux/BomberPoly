@@ -38,18 +38,18 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     /*
      * F1: Debug mode
-     * F2: Shrinking map
+     * F2: Debug Info (cl)
      * F3: Lanche Game
-     * F4: Print Cooldown
-     * F5: Clear Data Room
+     * F4: Print PlyAlive (cl)
+     * F5: Restart Cube (cl)
      * F6: Print Room State
-     * F7:
-     * F8:
-     * F9:
-     * F10:
-     * F11:
+     * F7: Shrinking map
+     * F8: Clear Data Room
+     * F9: Time * 5
+     * F10: set all players alive (cl)
+     * F11: force sync
      * F12:
-     */ 
+     */
 
     void Update()
     {
@@ -91,13 +91,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 roominfo.roundInfo = roundInfo.preEnd;
                 StartCoroutine(EndRound(_winer));
             }
+            roominfo.cooldown -= Time.deltaTime * (Input.GetKey(KeyCode.F9) ? 5 : 1);
             if (roominfo.cooldown <= 0f)
             {
                 roominfo.shrinking++;
                 MapShrinking(roominfo.shrinking);
-                roominfo.cooldown = 15f;
+                roominfo.cooldown = roominfo.timeBetweenShrinking;
             }
-            roominfo.cooldown -= Time.deltaTime;
         }
         //stream.allPlayer = allPlayer;
 
@@ -107,17 +107,27 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 roominfo.roundInfo,
                 allPlayer.Count);
         }
-        if (Input.GetKeyDown(KeyCode.F5))
+        if (Input.GetKeyDown(KeyCode.F8))
         {
             ClearDataRoom();
         }
-        if (roominfo.debugRound && Input.GetKeyDown(KeyCode.F2))
+        if (roominfo.debugRound && Input.GetKeyDown(KeyCode.F7))
         {
             MapShrinking(2);
         }
+        StreamSendData(StreamDataType.Room);
         if (Input.GetKeyDown(KeyCode.F4))
         {
-            Debug.LogFormat("Cooldown: {0}, Shrinking: {1}", roominfo.cooldown, roominfo.shrinking);
+            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
+            {
+                Debug.LogFormat("Ply: {0} alive {1} (sv)", _ply.Key, _ply.Value.var.alive);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            StreamSendData(StreamDataType.Map);
+            StreamSendData(StreamDataType.Players);
+            StreamSendData(StreamDataType.Room);
         }
     }
 
@@ -156,6 +166,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Debug.LogFormat("<color=blue> {0} Round Start </color>", _debug ? "Debug" :"");
         roominfo.mapSize = (roominfo.mapSize % 2 == 1) ? roominfo.mapSize + 1 : roominfo.mapSize;
         Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
+        roominfo.cooldown = roominfo.timeBeforeShrinking;
+        roominfo.shrinking = 0;
         foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
         {
             //_go.GetPhotonView().RequestOwnership();
@@ -304,6 +316,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         allPlayer[_view].var.alive = _alive;
         //stream.WhyUpdate(0);
         StreamSendData(StreamDataType.Players);
+        Debug.LogFormat("Ply {0} alive: {1}", _view, _alive);
     }
 
     [PunRPC]
@@ -430,6 +443,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     IEnumerator KillPlayer(int _ply)
     {
+        allPlayer[PhotonView.Find(_ply).OwnerActorNr].var.alive = false;
         PhotonView.Find(_ply).RequestOwnership();
         while(PhotonView.Find(_ply).Owner != PhotonNetwork.LocalPlayer)
         {
@@ -495,6 +509,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 }
                 stream.SendData(StreamDataType.Players, JsonConvert.SerializeObject(_plysJson));
                 break;
+            case StreamDataType.Room:
+                stream.SendData(StreamDataType.Room, JsonConvert.SerializeObject(roominfo));
+                break;
         }
     }
 
@@ -510,8 +527,8 @@ public class PlayerData
     }
     public PlayerData(PlayerVar _var)
     {
-        var = _var;
         ClassToOrigine();
+        var = _var;
     }
     public void ClassToOrigine()
     {
@@ -547,10 +564,12 @@ public class RoomInfoClass
 {
     public int mapSize = 20;
     public float powerDensity = 0.2f;
+    public int timeBeforeShrinking = 90;
+    public int timeBetweenShrinking = 15;
     public GameModes gameMode = GameModes.classic;
     public roundInfo roundInfo = roundInfo.none;
     public bool debugRound;
-    public float cooldown = 10f;
+    public float cooldown = 0f;
     public int shrinking = 0;
 }
 public enum roundInfo
