@@ -25,7 +25,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public Dictionary<Vector2, BlockClass> Blocks = new Dictionary<Vector2, BlockClass>();
 
     public Text photonInfo;
-    public EndMenu endMenu;
     public StreamManager sManag;
     public static ClientManager client;
     public PhotonView Pv;
@@ -38,13 +37,15 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public GameObject pauseMenu;
     public RoomInfoClass roomInfo;
 
+    public Scoretable scoreTable;
+
 
     void Start()
     {
         client = GetComponent<ClientManager>();
         InvokeRepeating("SetCountPlayer", 0f, 1f);
+        InvokeRepeating("SendPing", 0f, 5f);
         dataPlayer = GetComponent<DataManager>().data;
-        endMenu.gameObject.SetActive(false);
         ValideConnection();
         //sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
         //Debug.developerConsoleVisible = true;
@@ -61,15 +62,31 @@ public class ClientManager : MonoBehaviourPunCallbacks
             catch
             {}            
         }
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
+            {
+                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4} (sv)", _ply.Key, _ply.Value.var.name, _ply.Value.var.ping, _ply.Value.var.palyerGOId, _ply.Value.var.bot, _ply.Value.var.alive);
+            }
+        }
 
         if (!PhotonNetwork.InRoom)
         {
             SceneManager.LoadSceneAsync(1);
         }
         mainCam.SetActive( Myplayer == null);
-        if (Myplayer != null)
+        if (Myplayer != null && roomInfo.roundInfo == roundInfo.play)
         {
-            playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
+            try
+            {
+                Myplayer.GetComponent<PlayerGo>().enabled = true;
+                playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
+                Myplayer.GetComponent<PlayerGo>().cam.SetActive(true);
+            }
+            catch
+            {
+                Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
+            }
         }
         if (Input.GetKey(KeyCode.F2))
         {
@@ -111,13 +128,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             CreateCubes();
         }
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
-            {
-                Debug.LogFormat("Ply: {0} alive {1}", _ply.Key, _ply.Value.var.alive);
-            }
-        }
+       
         if (Input.GetKeyDown(KeyCode.F10))
         {
             allPlayer[1].var.alive = true;
@@ -144,12 +155,17 @@ public class ClientManager : MonoBehaviourPunCallbacks
                     allPlayer.Add(_v.Key, new PlayerData((PlayerVar)JsonConvert.DeserializeObject(_v.Value, typeof(PlayerVar))));
                     allPlayer[_v.Key].var.powerUps = (Dictionary<PowerUps, int>)JsonConvert.DeserializeObject(allPlayer[_v.Key].var.powerUpsJson, typeof(Dictionary<PowerUps, int>));
                 }
+                scoreTable.InitialazePlayerTable();
                 break;
             case StreamDataType.Room:
                 roomInfo = (RoomInfoClass)JsonConvert.DeserializeObject(_dataJson, typeof(RoomInfoClass));
                 break;
                 
         }
+    }
+    void SendPing()
+    {
+        Pv.RPC("SendPing", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber, PhotonNetwork.GetPing());
     }
 
     public override void OnJoinedRoom()
@@ -212,11 +228,12 @@ public class ClientManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void StartRound()
     {
-        endMenu.gameObject.SetActive(false);
+        scoreTable.enabelScoreBorad = false;
         CreateCubes();
         try
         {
             Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
+            Debug.Log("MyPly : " + Myplayer + "    " + allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId);
         }
         catch
         {
@@ -231,7 +248,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         stat = new Stat();
         Vector2Int _spawnPos = new Vector2Int(UnityEngine.Random.Range(1, 8) * 2 - 1, UnityEngine. Random.Range(1, 8) * 2 - 1);
         Pv.RPC("SpawnHere", RpcTarget.All, _spawnPos.x, _spawnPos.y);
-        Myplayer = PhotonNetwork.Instantiate(Pl.name, new Vector3(_spawnPos.x + 0.5f, 0.5f, _spawnPos.y + 0.5f), Quaternion.identity);
+        //Myplayer = PhotonNetwork.Instantiate(Pl.name, new Vector3(_spawnPos.x + 0.5f, 0.5f, _spawnPos.y + 0.5f), Quaternion.identity);
         Pv.RPC("PlayerAlive", RpcTarget.MasterClient, Pv.ViewID, true);
         CreateCubes();
     }
@@ -269,18 +286,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void RoundEnd(int _winer)
     {
-        endMenu.gameObject.SetActive(true);
-        if (_winer != -1)
-        {
-            endMenu.winer = allPlayer[_winer].var.name;
-            Debug.Log(allPlayer[_winer].var.name + " Won");
-        }
-        else
-        {
-            endMenu.winer = "No Player";
-            Debug.Log("No Player Won");
-        }
-        endMenu.EndGame();
+
     }
     [PunRPC]
     void ClearScene()

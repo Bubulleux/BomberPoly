@@ -40,7 +40,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
      * F1: Debug mode
      * F2: Debug Info (cl)
      * F3: Lanche Game
-     * F4: Print PlyAlive (cl)
+     * F4: PrintPlyStat (cl/sv)
      * F5: Restart Cube (cl)
      * F6: Print Room State
      * F7: Shrinking map
@@ -87,6 +87,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 else
                 {
                     _winer = _plyAlive[0];
+                    allPlayer[_winer].var.win++;
                 }
                 roominfo.roundInfo = roundInfo.preEnd;
                 StartCoroutine(EndRound(_winer));
@@ -120,15 +121,19 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
             {
-                Debug.LogFormat("Ply: {0} alive {1} (sv)", _ply.Key, _ply.Value.var.alive);
+                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4} (sv)", _ply.Key, _ply.Value.var.name, _ply.Value.var.ping, _ply.Value.var.palyerGOId, _ply.Value.var.bot, _ply.Value.var.alive);
             }
         }
         if (Input.GetKeyDown(KeyCode.F11))
         {
-            StreamSendData(StreamDataType.Map);
-            StreamSendData(StreamDataType.Players);
-            StreamSendData(StreamDataType.Room);
+            AllSync();
         }
+    }
+    void AllSync()
+    {
+        StreamSendData(StreamDataType.Map);
+        StreamSendData(StreamDataType.Players);
+        StreamSendData(StreamDataType.Room);
     }
 
     public void ClearDataRoom()
@@ -142,7 +147,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     public IEnumerator EndRound(int _winer)
     {
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
         yield return new WaitForSeconds(3f);
         Pv.RPC("RoundEnd", RpcTarget.All, _winer);
@@ -250,9 +255,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(0.5f);
         roominfo.roundInfo = roundInfo.play;
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
-        //stream.WhyUpdate(1);
+        
         StreamSendData(StreamDataType.Map);
         Pv.RPC("StartRound", RpcTarget.All);
     }
@@ -266,7 +271,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             PhotonNetwork.Destroy(_pv.gameObject);
         }
         allPlayer.Remove(otherPlayer.ActorNumber);
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
     }
 
@@ -290,7 +295,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
         }
-        //stream.WhyUpdate(1);
+        
         StreamSendData(StreamDataType.Map);
     }
 
@@ -306,7 +311,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     void DestroyPower(int x, int y)
     {
         blocks[new Vector2(x, y)].PowerUp = 0;
-        //stream.WhyUpdate(1);
+        
         StreamSendData(StreamDataType.Map);
     }
 
@@ -314,7 +319,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     void PlayerAlive(int _view, bool _alive)
     {
         allPlayer[_view].var.alive = _alive;
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
         Debug.LogFormat("Ply {0} alive: {1}", _view, _alive);
     }
@@ -330,9 +335,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
             ply.color = Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f);
             allPlayer.Add(_IdPly, new PlayerData(ply));
             Debug.LogFormat("<color=green> Player Connect Name: {0}, hat: {1}, id: {2} </color>", _name, _hat, _IdPly);
+            AllSync();
         }
-        //stream.WhyUpdate(0);
-        StreamSendData(StreamDataType.Players);
     }
 
     [PunRPC]
@@ -349,7 +353,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             
         }
-        //stream.WhyUpdate(1);
+        
         StreamSendData(StreamDataType.Map);
     }
 
@@ -372,7 +376,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             GameObject _go = PhotonNetwork.Instantiate(bombe.name, _bombePos, Quaternion.identity);
             allPlayer[_owner].var.BombeCount += 1;
             StartCoroutine(TimerBombe(_go, _owner));
-            //stream.WhyUpdate(0);
+            
             StreamSendData(StreamDataType.Players);
         }
     }
@@ -405,9 +409,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
         PhotonNetwork.Destroy(_bombe);
-        //stream.WhyUpdate(1);
+        
         StreamSendData(StreamDataType.Map);
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
     }
 
@@ -437,7 +441,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
                 
         }
-        //stream.WhyUpdate(0);
+        
         StreamSendData(StreamDataType.Players);
     }
 
@@ -514,6 +518,12 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 break;
         }
     }
+    [PunRPC]
+    void SendPing(int _ply, int _ping)
+    {
+        allPlayer[_ply].var.ping = _ping;
+        StreamSendData(StreamDataType.Players);
+    }
 
 }
 
@@ -555,6 +565,7 @@ public struct PlayerVar
     public int BombeCount;
     public bool bot;
     public bool alive;
+    public int ping;
 }
 public enum GameModes
 {

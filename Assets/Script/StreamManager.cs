@@ -36,7 +36,6 @@ public class StreamManager : MonoBehaviour, IPunObservable
                 byteStreamed = _byteCount;
                 byte[] _dataBytes = (byte[])stream.ReceiveNext();
                 string _dataJson = (string)ObjectSerialize.DeSerialize(_dataBytes);
-                Debug.Log(_dataJson);
                 Dictionary<StreamDataType, string> _datas = (Dictionary<StreamDataType, string>)JsonConvert.DeserializeObject(_dataJson, typeof(Dictionary<StreamDataType, string>));
                 foreach(KeyValuePair<StreamDataType, string> _data in _datas)
                 {

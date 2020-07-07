@@ -21,14 +21,12 @@ public class PlayerGo : MonoBehaviour
 
         deltaPos = transform.position;
     }
-    
-    // Update is called once per frame
     void Update()
     {
-        if (cam.activeSelf && !Pv.IsMine)
-        {
-            cam.SetActive(false);
-        }
+        //if (cam.activeSelf && !Pv.IsMine)
+        //{
+        //    cam.SetActive(false);
+        //}
         string _hat = hats[ClientManager.client.allPlayer[Pv.Owner.ActorNumber].var.hat];
         if (_hat != null)
         {
@@ -58,10 +56,12 @@ public class PlayerGo : MonoBehaviour
             force = 30f + ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed] * 3f);
             Vector3 _goTo = new Vector3(Input.GetAxis("Horizontal") * force, 0f, Input.GetAxis("Vertical") * force);
             GetComponent<Rigidbody>().AddForce(_goTo, ForceMode.Force);
+            Vector3 _newVel = GetComponent<Rigidbody>().velocity;
+            
         }
 
         Vector3 _vel = (transform.position - deltaPos) / Time.deltaTime;
-        if (_vel != Vector3.zero)
+        if (_vel.magnitude > 0.1f )
         {
             Quaternion _angVel = Quaternion.LookRotation(_vel);
             Quaternion _ang = Quaternion.RotateTowards(gfx.transform.rotation, _angVel, Time.fixedDeltaTime * 700f);

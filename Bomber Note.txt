@@ -2,6 +2,9 @@
 Possibiliter de modification de la room
 X	size de la map
 	traverser des bombe
+	BeforeShrinkin
+	BeetwenShrinking
+	Densiter des box
 
 Ajout
 X	ajouter un rétrésisement de la map
@@ -33,11 +36,11 @@ X	Screen titel
 X	Refaire le système de room setting
 	Separer RoomManager en plusieur code
 	Animation Block
-	Piège
 	killLog
 	Mistery box
 		tp
 		Mega bombe
+		Piège
 	dic block to float[,]
 
 
@@ -54,7 +57,7 @@ X	Room Seting -> Room Setting
 	Bug Verif Quand player quit
 X	Bug build ne veut pas se co
 X	Bug player noire
-	Bug Audio Listerner
+X	Bug Audio Listerner
 
 GFX:
 (2/3)	3 batiment

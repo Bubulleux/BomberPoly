@@ -9,7 +9,8 @@ public class RoomSetting : MonoBehaviour
     public RoomManger roomManager;
     public InputField mapSize;
     public InputField powerDensity;
-    public Dropdown gameMode;
+    public InputField timeBeforeShrinking;
+    public InputField timeBetweenShrinking;
     void OnEnable()
     {
         if (!PhotonNetwork.IsMasterClient)
@@ -18,7 +19,8 @@ public class RoomSetting : MonoBehaviour
         }
         mapSize.text = roomManager.roominfo.mapSize.ToString();
         powerDensity.text = (roomManager.roominfo.powerDensity * 100f).ToString();
-        gameMode.value = (int)roomManager.roominfo.gameMode;
+        timeBeforeShrinking.text = roomManager.roominfo.timeBeforeShrinking.ToString();
+        timeBetweenShrinking.text = roomManager.roominfo.timeBetweenShrinking.ToString();
         
         
     }
@@ -27,7 +29,7 @@ public class RoomSetting : MonoBehaviour
     {
         roomManager.roominfo.mapSize = int.Parse(mapSize.text);
         roomManager.roominfo.powerDensity = (int.Parse(powerDensity.text)/100f);
-        roomManager.roominfo.gameMode = (GameModes)gameMode.value;
+        roomManager.roominfo.timeBeforeShrinking = int.Parse(timeBeforeShrinking.text);
         roomManager.ClearScene(roundInfo.none);
         gameObject.SetActive(false);
     }

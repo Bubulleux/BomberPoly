@@ -85,7 +85,6 @@
     <Compile Include="Assets\Script\ButonManager.cs" />
     <Compile Include="Assets\Script\ClientManager.cs" />
     <Compile Include="Assets\Script\DataManager.cs" />
-    <Compile Include="Assets\Script\EndMenu.cs" />
     <Compile Include="Assets\Script\ErrorBox.cs" />
     <Compile Include="Assets\Script\Explision.cs" />
     <Compile Include="Assets\Script\HUD.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="Assets\Script\RoomListe.cs" />
     <Compile Include="Assets\Script\RoomManger.cs" />
     <Compile Include="Assets\Script\RoomSetting.cs" />
+    <Compile Include="Assets\Script\Scoretable.cs" />
     <Compile Include="Assets\Script\ScreenTitle.cs" />
     <Compile Include="Assets\Script\ScreneTitle.cs" />
     <Compile Include="Assets\Script\SettingSender.cs" />

@@ -61,5 +61,6 @@ MonoBehaviour:
   - PlayerKilled
   - DebugOnMaster
   - PlySendProfil
+  - SendPing
   DisableAutoOpenWizard: 1
   ShowSettings: 1
