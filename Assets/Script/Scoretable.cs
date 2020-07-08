@@ -50,6 +50,10 @@ public class Scoretable : MonoBehaviour
         {
             winer = null;
         }
+        if (enabelScoreBorad && client.roomInfo.roundInfo == roundInfo.play && !Input.GetKey(KeyCode.Tab))
+        {
+            enabelScoreBorad = false;
+        }
     }
 
     public void InitialazePlayerTable()
@@ -63,7 +67,7 @@ public class Scoretable : MonoBehaviour
             Transform _plyCellule = Instantiate(plyCellulePrefab, plyTable).transform;
             _plyCellule.Find("Alive").GetComponent<Toggle>().isOn = _ply.Value.var.alive;
             _plyCellule.Find("Name").GetComponent<Text>().text = _ply.Value.var.name;
-            _plyCellule.Find("Name").GetComponent<Text>().color = _ply.Value.var.color;
+            _plyCellule.Find("Name").GetComponent<Text>().color = _ply.Value.var.color * new Color(0.75f, 0.75f, 0.75f);
             _plyCellule.Find("Win").GetComponent<Text>().text = _ply.Value.var.win.ToString();
             _plyCellule.Find("Kill").GetComponent<Text>().text = _ply.Value.var.kill.ToString();
             _plyCellule.Find("Ping").GetComponent<Text>().text = _ply.Value.var.ping.ToString();

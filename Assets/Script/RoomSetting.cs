@@ -30,6 +30,7 @@ public class RoomSetting : MonoBehaviour
         roomManager.roominfo.mapSize = int.Parse(mapSize.text);
         roomManager.roominfo.powerDensity = (int.Parse(powerDensity.text)/100f);
         roomManager.roominfo.timeBeforeShrinking = int.Parse(timeBeforeShrinking.text);
+        roomManager.roominfo.timeBetweenShrinking = int.Parse(timeBetweenShrinking.text);
         roomManager.ClearScene(roundInfo.none);
         gameObject.SetActive(false);
     }

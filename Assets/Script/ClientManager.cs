@@ -88,18 +88,22 @@ public class ClientManager : MonoBehaviourPunCallbacks
                 Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
             }
         }
+        if (Myplayer == null && roomInfo.roundInfo == roundInfo.play && LocalPly().var.alive)
+        {
+            FindMyPly();
+        }
         if (Input.GetKey(KeyCode.F2))
         {
             try
             {
-                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} , time {6}", 
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} , RoomStatus {6}", 
                     playerCount.ToString(), 
                     PhotonNetwork.CurrentRoom.Name, 
                     PhotonNetwork.LocalPlayer.ActorNumber, 
                     allPlayer[PhotonNetwork.MasterClient.ActorNumber].var.name, 
                     PhotonNetwork.GetPing(),
                     PhotonNetwork.NetworkClientState,
-                    roomInfo.cooldown);
+                    roomInfo.roundInfo.ToString());
             }
             catch (Exception e)
             {
@@ -230,6 +234,9 @@ public class ClientManager : MonoBehaviourPunCallbacks
     {
         scoreTable.enabelScoreBorad = false;
         CreateCubes();
+    }
+    void FindMyPly()
+    {
         try
         {
             Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
@@ -239,7 +246,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId);
         }
-        
     }
 
     [PunRPC]
@@ -301,6 +307,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public PlayerData LocalPly()
+    {
+        return allPlayer[PhotonNetwork.LocalPlayer.ActorNumber];
+    }
     
 
     //[PunRPC]

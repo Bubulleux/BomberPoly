@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class HUD : MonoBehaviour
 {
     public ClientManager client;
     public Text plyAlive;
     public Text timer;
+    public Text mysteriPower;
     void Start()
     {
         
@@ -40,5 +42,7 @@ public class HUD : MonoBehaviour
             }
         }
         plyAlive.text = "Alive : " + _plyAlive;
+
+        mysteriPower.text = client.LocalPly().var.mysteryPower.ToString();
     }
 }

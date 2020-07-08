@@ -167,6 +167,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
     }
     IEnumerator StartRound(bool _debug)
     {
+        if (roominfo.roundInfo == roundInfo.load)
+        {
+            yield break;
+        }
         ClearScene(roundInfo.load);
         Debug.LogFormat("<color=blue> {0} Round Start </color>", _debug ? "Debug" :"");
         roominfo.mapSize = (roominfo.mapSize % 2 == 1) ? roominfo.mapSize + 1 : roominfo.mapSize;
@@ -209,7 +213,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 blocks[new Vector2Int(x, y)].state = _unbreak ? BlockState.unbrekable : Random.Range(0, 5) == 0 ? BlockState.destroyer : BlockState.brekable;
                 if (blocks[new Vector2Int(x, y)].state != BlockState.destroyer && (Random.Range(0f,1f) < roominfo.powerDensity))
                 {
-                    blocks[new Vector2Int(x, y)].PowerUp = (PowerUps)Random.Range(1, 4);
+                    blocks[new Vector2Int(x, y)].PowerUp = (PowerUps)Random.Range(1, 5);
                 }
                 //yield return new WaitForFixedUpdate();
             }
@@ -303,8 +307,15 @@ public class RoomManger : MonoBehaviourPunCallbacks
     void TakePowerUp(int _why, int _what)
     {
         PowerUps _powerUp = (PowerUps)_what;
-        allPlayer[_why].var.powerUps[(PowerUps)_what] = (int)allPlayer[_why].var.powerUps[(PowerUps)_what] + 1;
-        Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[_why].var.powerUps[PowerUps.speed], allPlayer[_why].var.powerUps[PowerUps.moreRiadusse], allPlayer[_why].var.powerUps[PowerUps.moreBombe]);
+        if (_powerUp == PowerUps.mistery && allPlayer[_why].var.mysteryPower == MysteryPower.MysteryPowers.none)
+        {
+            allPlayer[_why].var.mysteryPower = (MysteryPower.MysteryPowers)Random.Range(1, 3);
+        }
+        else if (_powerUp != PowerUps.mistery)
+        {
+            allPlayer[_why].var.powerUps[(PowerUps)_what] = (int)allPlayer[_why].var.powerUps[(PowerUps)_what] + 1;
+            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[_why].var.powerUps[PowerUps.speed], allPlayer[_why].var.powerUps[PowerUps.moreRiadusse], allPlayer[_why].var.powerUps[PowerUps.moreBombe]);
+        }
         StreamSendData(StreamDataType.Players);
     }
     [PunRPC]
@@ -373,20 +384,20 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
         if (!_bombeHere && allPlayer[_owner].var.BombeCount < (int)allPlayer[_owner].var.powerUps[PowerUps.moreBombe]+1)
         {
-            GameObject _go = PhotonNetwork.Instantiate(bombe.name, _bombePos, Quaternion.identity);
-            allPlayer[_owner].var.BombeCount += 1;
-            StartCoroutine(TimerBombe(_go, _owner));
             
-            StreamSendData(StreamDataType.Players);
+            StartCoroutine(TimerBombe(_bombePos,_owner, false));
         }
     }
-    IEnumerator TimerBombe(GameObject _go, int _owner)
+    public IEnumerator TimerBombe(Vector3 _bombePos, int _owner, bool _megaBombe)
     {
+        GameObject _go = PhotonNetwork.Instantiate(bombe.name, _bombePos, Quaternion.identity);
+        allPlayer[_owner].var.BombeCount += 1;
+        StreamSendData(StreamDataType.Players);
         yield return new WaitForSeconds(3f);
-        Explositon(_go, _owner);
+        Explositon(_go, _owner, _megaBombe);
     }
 
-    public void Explositon( GameObject _bombe, int _owner)
+    public void Explositon( GameObject _bombe, int _owner, bool _megaBombe)
     {
         Vector3 _pos = _bombe.transform.position;
         PhotonNetwork.Instantiate(explosion.name, _pos + new Vector3(0.5f, 0.3f, 0.5f), Quaternion.identity);
@@ -394,9 +405,14 @@ public class RoomManger : MonoBehaviourPunCallbacks
         ExploseHere(_bombPos, _owner);
         Vector2Int[] _alldir = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         allPlayer[_owner].var.BombeCount -= 1;
+        int _rad = ((int)allPlayer[_owner].var.powerUps[PowerUps.moreRiadusse] + 1);
+        if (_megaBombe)
+        {
+            _rad = 999;
+        }
         foreach (Vector2Int _dir in _alldir)
         {
-            for (int i = 1; i <= ((int)allPlayer[_owner].var.powerUps[PowerUps.moreRiadusse] + 1); i++)
+            for (int i = 1; i <= _rad; i++)
             {
                 Vector2Int _expPos = new Vector2Int(_bombPos.x, _bombPos.y) + (new Vector2Int(_dir.x, _dir.y) * i);
                 PhotonNetwork.Instantiate(explosion.name, new Vector3(_expPos.x + 0.5f, 0.3f, _expPos.y + 0.5f), Quaternion.identity);
@@ -404,7 +420,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 if (blocks[_expPos].state != BlockState.destroyer)
                 {
                     Pv.RPC("DestroyBlock", RpcTarget.MasterClient, _expPos.x, _expPos.y);
-                    break;
+                    if (!_megaBombe || blocks[_expPos].state == BlockState.unbrekable)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -455,7 +474,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         allPlayer[PhotonView.Find(_ply).Owner.ActorNumber].var.palyerGOId = -1;
         PhotonNetwork.Destroy(PhotonView.Find(_ply).gameObject);
-        Pv.RPC("PlayerKilled", RpcTarget.All, _ply);
+        //Pv.RPC("PlayerKilled", RpcTarget.All, _ply);
         yield return null;
     }
 
@@ -566,6 +585,7 @@ public struct PlayerVar
     public bool bot;
     public bool alive;
     public int ping;
+    public MysteryPower.MysteryPowers mysteryPower;
 }
 public enum GameModes
 {

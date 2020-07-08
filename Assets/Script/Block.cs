@@ -30,7 +30,14 @@ public class Block : MonoBehaviour
         //GetComponent<AudioSource>().enabled = classe.PowerUp != 0 && classe.state == BlockState.destroyer;
         if (powerUpGFX.activeSelf)
         {
-            powerUpGFX.GetComponent<Renderer>().material.color = ColorPower[(int)classe.PowerUp - 1];
+            if (classe.PowerUp == PowerUps.mistery)
+            {
+                powerUpGFX.GetComponent<Renderer>().material.color = Color.HSVToRGB(Time.time / 5f % 1f, 1f, 1f);
+            }
+            else
+            {
+                powerUpGFX.GetComponent<Renderer>().material.color = ColorPower[(int)classe.PowerUp - 1];
+            }
 
         }
     }
@@ -74,5 +81,6 @@ public enum PowerUps
     none,
     speed,
     moreBombe,
-    moreRiadusse
+    moreRiadusse,
+    mistery
 }

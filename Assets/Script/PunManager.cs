@@ -35,6 +35,7 @@ public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
         TypedLobby lobbyData = new TypedLobby("Proto01Lobby", LobbyType.SqlLobby);
         PhotonNetwork.GetCustomRoomList(lobbyData, null);
         PhotonNetwork.JoinLobby();
+        Debug.LogFormat("Client Connect in {0} ", PhotonNetwork.CloudRegion);
     }
     public override void OnJoinedLobby()
     {

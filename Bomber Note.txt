@@ -37,8 +37,8 @@ X	Refaire le système de room setting
 	Separer RoomManager en plusieur code
 	Animation Block
 	killLog
-	Mistery box
-		tp
+X	Mistery box
+X		tp
 		Mega bombe
 		Piège
 	dic block to float[,]
@@ -63,6 +63,13 @@ GFX:
 (2/3)	3 batiment
 X	Player
 	Affiche pour pub 
+
+Code Correction
+	Roommanger -> RoomManager
+	allPlayer -> Players
+	PlayerGo -> PlayerMotor
+	allBlock -> Map[,]
+	remake Bombe Sys
 
 Context:
 On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.

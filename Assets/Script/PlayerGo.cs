@@ -48,6 +48,10 @@ public class PlayerGo : MonoBehaviour
                 Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), _ply);
             }
         }
+        if (Input.GetMouseButton(1) || Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Pv.RPC("UsePower", RpcTarget.MasterClient);
+        }
     }
     public void FixedUpdate()
     {
@@ -68,5 +72,11 @@ public class PlayerGo : MonoBehaviour
             gfx.transform.rotation = _ang;
         }
         deltaPos = transform.position;
+    }
+
+    [PunRPC]
+    void TP(float x , float y)
+    {
+        transform.position = new Vector3(x, 0.5f, y);
     }
 }
