@@ -45,7 +45,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         client = GetComponent<ClientManager>();
         InvokeRepeating("SetCountPlayer", 0f, 1f);
         InvokeRepeating("SendPing", 0f, 5f);
-        dataPlayer = GetComponent<DataManager>().data;
+        dataPlayer = DataManager.GetData();
         ValideConnection();
         //sManag = GameObject.FindGameObjectWithTag("Stream").GetComponent<StreamManager>();
         //Debug.developerConsoleVisible = true;
@@ -79,9 +79,9 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             try
             {
-                Myplayer.GetComponent<PlayerGo>().enabled = true;
+                Myplayer.GetComponent<PlayerControlerCl>().enabled = true;
                 playerPos = new Vector2Int(Mathf.FloorToInt(Myplayer.transform.position.x), Mathf.FloorToInt(Myplayer.transform.position.z));
-                Myplayer.GetComponent<PlayerGo>().cam.SetActive(true);
+                Myplayer.GetComponent<PlayerControlerCl>().cam.SetActive(true);
             }
             catch
             {
@@ -218,17 +218,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    [PunRPC]
-    public void DestroyBlock()
-    {
-        //allBlockInDict = new Dictionary<Vector2Int, GameObject>();
-        foreach (GameObject _block in GameObject.FindGameObjectsWithTag("Block"))
-        {
-            Destroy(_block);
-        }
-        Pv.RPC("PlayerAlive", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber, false);
-    }
+    
     [PunRPC]
     void StartRound()
     {

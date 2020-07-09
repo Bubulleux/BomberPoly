@@ -18,11 +18,6 @@ public class PlayerMotorMasterClient : MonoBehaviour
         roomManager = GameObject.Find("GameManager").GetComponent<RoomManger>();
         misteryPower = GetComponent<MysteryPower>();
     }
-    
-    void Update()
-    {
-        
-    }
 
     [PunRPC]
     void UsePower()

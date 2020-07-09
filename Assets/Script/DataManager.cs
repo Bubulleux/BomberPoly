@@ -4,32 +4,49 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-public class DataManager : MonoBehaviour
+public static class DataManager 
 {
-    public Datas data = new Datas();
-    public void Awake()
-    {
-        FileStream stream = new FileStream(Application.persistentDataPath + "/data.bin", FileMode.Open);
-        BinaryFormatter formatter = new BinaryFormatter();
-        string jsonData = (string)formatter.Deserialize(stream);
-        stream.Close();
-        data = JsonUtility.FromJson<Datas>(jsonData);
-        VerifQuality();
-    }
-    
-    public void Save()
+    private static Datas constDatas;
+    public static void Save(Datas data)
     {
         FileStream stream = new FileStream(Application.persistentDataPath + "/data.bin", FileMode.OpenOrCreate);
         BinaryFormatter formatter = new BinaryFormatter();
         formatter.Serialize(stream, JsonUtility.ToJson(data));
         stream.Close();
         VerifQuality();
+        SetData();
     }
-    public void VerifQuality()
+    public static Datas GetData()
     {
-        if (QualitySettings.GetQualityLevel() != data.quality)
+        if (constDatas == null)
         {
-            QualitySettings.SetQualityLevel(data.quality);
+            SetData();
+        }
+        return constDatas;
+    }
+    private static void SetData()
+    {
+        try
+        {
+            FileStream stream = new FileStream(Application.persistentDataPath + "/data.bin", FileMode.Open);
+            BinaryFormatter formatter = new BinaryFormatter();
+            string jsonData = (string)formatter.Deserialize(stream);
+            stream.Close();
+            constDatas = JsonUtility.FromJson<Datas>(jsonData);
+        }
+        catch
+        {
+            Debug.Log("Data Not found");
+            constDatas = new Datas();
+            Save(constDatas);
+        }
+        VerifQuality();
+    }
+    private static void VerifQuality()
+    {
+        if (QualitySettings.GetQualityLevel() != GetData().quality)
+        {
+            QualitySettings.SetQualityLevel(GetData().quality);
             Debug.Log("Quality level Set to " + QualitySettings.names[QualitySettings.GetQualityLevel()]);
         }
     }
@@ -42,4 +59,6 @@ public class Datas
     public int quality;
     public int kill;
     public int roundWin;
+    public float mainVolume = 0f;
+    public float musicVolume = 0f;
 }

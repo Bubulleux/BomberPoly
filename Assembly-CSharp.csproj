@@ -88,9 +88,11 @@
     <Compile Include="Assets\Script\ErrorBox.cs" />
     <Compile Include="Assets\Script\Explision.cs" />
     <Compile Include="Assets\Script\HUD.cs" />
+    <Compile Include="Assets\Script\Music.cs" />
     <Compile Include="Assets\Script\MysteryPower.cs" />
     <Compile Include="Assets\Script\ObjectSerialize.cs" />
-    <Compile Include="Assets\Script\PlayerGo.cs" />
+    <Compile Include="Assets\Script\PlayerCl.cs" />
+    <Compile Include="Assets\Script\PlayerControlerCl.cs" />
     <Compile Include="Assets\Script\PlayerMotorMasterClient.cs" />
     <Compile Include="Assets\Script\PowerUp.cs" />
     <Compile Include="Assets\Script\PowerUPPanelle.cs" />

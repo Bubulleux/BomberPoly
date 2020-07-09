@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 6549610506780272533}
   - component: {fileID: -836438737210328166}
   - component: {fileID: 6549610506780272528}
+  - component: {fileID: 1358559492479105698}
   - component: {fileID: 8652363595334341915}
   - component: {fileID: 3570650082850169169}
   - component: {fileID: 4643274211694408126}
@@ -259,18 +260,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6549610506780272527}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb7f52626f4bae7429a6aad306c2c6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 1587158376070208031}
-  inBlock: {fileID: 0}
-  viewIDclient: 0
   force: 0
+--- !u!114 &1358559492479105698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6549610506780272527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d36b76586bc0454a8e8283d8fd8b423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   gfx: {fileID: 3949681672491686037}
-  RobotGfx: {fileID: 1873074378439212348}
-  deltaPos: {x: 0, y: 0, z: 0}
+  robotGFX: {fileID: 1873074378439212348}
 --- !u!114 &8652363595334341915
 MonoBehaviour:
   m_ObjectHideFlags: 0

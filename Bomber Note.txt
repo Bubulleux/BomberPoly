@@ -34,14 +34,12 @@ X	Ajouter du ptn de son
 	Remake all texture with shader Graph
 X	Screen titel
 X	Refaire le système de room setting
-	Separer RoomManager en plusieur code
 	Animation Block
 	killLog
 X	Mistery box
 X		tp
 		Mega bombe
-		Piège
-	dic block to float[,]
+		Mine
 
 
 Bug:
@@ -62,7 +60,6 @@ X	Bug Audio Listerner
 GFX:
 (2/3)	3 batiment
 X	Player
-	Affiche pour pub 
 
 Code Correction
 	Roommanger -> RoomManager
@@ -74,3 +71,7 @@ Code Correction
 Context:
 On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.
 
+Crédit:
+Explosion: Michel Baradari
+Music: cynicmusic 
+	

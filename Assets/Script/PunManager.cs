@@ -17,6 +17,7 @@ public class PunManager : MonoBehaviourPunCallbacks, ILobbyCallbacks
         Debug.ClearDeveloperConsole();
         PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.LogLevel = PunLogLevel.ErrorsOnly;
     }
     public void Update()
     {

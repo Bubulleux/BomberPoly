@@ -167,14 +167,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
     }
     IEnumerator StartRound(bool _debug)
     {
-        if (roominfo.roundInfo == roundInfo.load)
+        if (roominfo.roundInfo != roundInfo.play && roominfo.roundInfo != roundInfo.none)
         {
             yield break;
         }
         ClearScene(roundInfo.load);
         Debug.LogFormat("<color=blue> {0} Round Start </color>", _debug ? "Debug" :"");
         roominfo.mapSize = (roominfo.mapSize % 2 == 1) ? roominfo.mapSize + 1 : roominfo.mapSize;
-        Pv.RPC("DestroyBlock", RpcTarget.AllBuffered);
         roominfo.cooldown = roominfo.timeBeforeShrinking;
         roominfo.shrinking = 0;
         foreach (GameObject _go in GameObject.FindGameObjectsWithTag("Player"))
@@ -193,7 +192,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             {
                 
                 name = "Bot",
-                color = Color.black,
+                color = Color.white,
                 bot = true
             };
             PlayerData _plyData = new PlayerData(_var);
@@ -215,7 +214,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 {
                     blocks[new Vector2Int(x, y)].PowerUp = (PowerUps)Random.Range(1, 5);
                 }
-                //yield return new WaitForFixedUpdate();
             }
         }
         yield return new WaitForSeconds(2f);
@@ -234,8 +232,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 allPlayer[_ply.Key].var.palyerGOId = _player.GetPhotonView().ViewID;
                 if (_ply.Value.var.bot)
                 {
-                    _player.GetComponent<PlayerGo>().enabled = false;
-                    _player.GetComponent<PlayerGo>().cam.SetActive(false);
+                    _player.GetComponent<PlayerControlerCl>().enabled = false;
+                    _player.GetComponent<PlayerControlerCl>().cam.SetActive(false);
                 }
             }
             else
@@ -289,18 +287,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
         return false;
-    }
-
-    [PunRPC]
-    void DestroyBlock(int _x, int _y)
-    {
-        Debug.Log(new Vector2(_x, _y) + "  " + blocks.ContainsKey(new Vector2(_x, _y)) + "  " + blocks.Count + "   " + PhotonNetwork.IsMasterClient);
-        if (blocks[new Vector2(_x, _y)].state == BlockState.brekable)
-        {
-            blocks[new Vector2(_x, _y)].state = BlockState.destroyer;
-        }
-        
-        StreamSendData(StreamDataType.Map);
     }
 
     [PunRPC]
@@ -419,7 +405,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 ExploseHere(_expPos, _owner);
                 if (blocks[_expPos].state != BlockState.destroyer)
                 {
-                    Pv.RPC("DestroyBlock", RpcTarget.MasterClient, _expPos.x, _expPos.y);
+                    if (blocks[_expPos].state == BlockState.brekable)
+                    {
+                        blocks[_expPos].state = BlockState.destroyer;
+                    }
                     if (!_megaBombe || blocks[_expPos].state == BlockState.unbrekable)
                     {
                         break;
