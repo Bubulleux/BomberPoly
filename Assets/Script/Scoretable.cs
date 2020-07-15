@@ -11,7 +11,7 @@ public class Scoretable : MonoBehaviour
     public Transform plyTable;
     public bool enabelScoreBorad;
     public ClientManager client;
-    public PlayerData winer;
+    public Client winer;
     public Text mainText;
     void Start()
     {
@@ -37,9 +37,9 @@ public class Scoretable : MonoBehaviour
             enabelScoreBorad = true;
             if (client.roomInfo.roundInfo != roundInfo.play)
             {
-                foreach(KeyValuePair<int, PlayerData> _ply in client.allPlayer)
+                foreach(KeyValuePair<int, Client> _ply in client.allPlayer)
                 {
-                    if (_ply.Value.var.alive)
+                    if (_ply.Value.alive)
                     {
                         winer = _ply.Value;
                     }
@@ -62,15 +62,15 @@ public class Scoretable : MonoBehaviour
         {
             Destroy(plyTable.GetChild(i).gameObject);
         }
-        foreach(KeyValuePair<int, PlayerData> _ply in client.allPlayer)
+        foreach(KeyValuePair<int, Client> _ply in client.allPlayer)
         {
             Transform _plyCellule = Instantiate(plyCellulePrefab, plyTable).transform;
-            _plyCellule.Find("Alive").GetComponent<Toggle>().isOn = _ply.Value.var.alive;
-            _plyCellule.Find("Name").GetComponent<Text>().text = _ply.Value.var.name;
-            _plyCellule.Find("Name").GetComponent<Text>().color = _ply.Value.var.color * new Color(0.75f, 0.75f, 0.75f);
-            _plyCellule.Find("Win").GetComponent<Text>().text = _ply.Value.var.win.ToString();
-            _plyCellule.Find("Kill").GetComponent<Text>().text = _ply.Value.var.kill.ToString();
-            _plyCellule.Find("Ping").GetComponent<Text>().text = _ply.Value.var.ping.ToString();
+            _plyCellule.Find("Alive").GetComponent<Toggle>().isOn = _ply.Value.alive;
+            _plyCellule.Find("Name").GetComponent<Text>().text = _ply.Value.name;
+            _plyCellule.Find("Name").GetComponent<Text>().color = _ply.Value.color * new Color(0.75f, 0.75f, 0.75f);
+            _plyCellule.Find("Win").GetComponent<Text>().text = _ply.Value.win.ToString();
+            _plyCellule.Find("Kill").GetComponent<Text>().text = _ply.Value.kill.ToString();
+            _plyCellule.Find("Ping").GetComponent<Text>().text = _ply.Value.ping.ToString();
         }
         if (winer == null)
         {
@@ -78,7 +78,7 @@ public class Scoretable : MonoBehaviour
         }
         else
         {
-            mainText.text = winer.var.name + " Won!";
+            mainText.text = winer.name + " Won!";
         }
     }
 }

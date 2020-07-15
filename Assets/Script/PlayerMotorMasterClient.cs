@@ -22,11 +22,11 @@ public class PlayerMotorMasterClient : MonoBehaviour
     [PunRPC]
     void UsePower()
     {
-        if (RoomManger.allPlayer[photonView.OwnerActorNr].var.mysteryPower != MysteryPower.MysteryPowers.none)
+        if (RoomManger.allPlayer[photonView.OwnerActorNr].GetPly().mysteryPower != MysteryPower.MysteryPowers.none)
         {
             if (misteryPower.UseMyteryPower(ClientManager.client.allPlayer[photonView.OwnerActorNr]))
             {
-                RoomManger.allPlayer[photonView.OwnerActorNr].var.mysteryPower = MysteryPower.MysteryPowers.none;
+                RoomManger.allPlayer[photonView.OwnerActorNr].GetPly().mysteryPower = MysteryPower.MysteryPowers.none;
                 roomManager.StreamSendData(StreamDataType.Players);
             }
         }

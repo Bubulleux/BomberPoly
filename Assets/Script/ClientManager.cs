@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 using System;
+using System.Reflection;
 public class ClientManager : MonoBehaviourPunCallbacks
 {
     public GameObject Pl;
@@ -20,7 +21,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     public roundInfo roundStat;
 
 
-    public Dictionary<int, PlayerData> allPlayer = new Dictionary<int, PlayerData>();
+    public Dictionary<int, Client> allPlayer = new Dictionary<int, Client>();
     //public IDictionary<Vector2Int, GameObject> allBlockInDict;
     public Dictionary<Vector2, BlockClass> Blocks = new Dictionary<Vector2, BlockClass>();
 
@@ -39,10 +40,12 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
     public Scoretable scoreTable;
 
-
-    void Start()
+    private void Awake()
     {
         client = GetComponent<ClientManager>();
+    }
+    void Start()
+    {
         InvokeRepeating("SetCountPlayer", 0f, 1f);
         InvokeRepeating("SendPing", 0f, 5f);
         dataPlayer = DataManager.GetData();
@@ -53,6 +56,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (allPlayer.Count == 0)
+        {
+            return;
+        }
         if (sManag == null)
         {
             try
@@ -64,9 +71,9 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
         if (Input.GetKeyDown(KeyCode.F4))
         {
-            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
+            foreach (KeyValuePair<int, Client> _ply in allPlayer)
             {
-                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4} (sv)", _ply.Key, _ply.Value.var.name, _ply.Value.var.ping, _ply.Value.var.palyerGOId, _ply.Value.var.bot, _ply.Value.var.alive);
+                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4}", _ply.Key, _ply.Value.name, _ply.Value.ping, _ply.Value.plyInstancePvId, _ply.Value.bot, _ply.Value.alive);
             }
         }
 
@@ -85,10 +92,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
             }
             catch
             {
-                Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
+                Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].plyInstancePvId).gameObject;
             }
         }
-        if (Myplayer == null && roomInfo.roundInfo == roundInfo.play && LocalPly().var.alive)
+        if (Myplayer == null && roomInfo.roundInfo == roundInfo.play && LocalPly().alive)
         {
             FindMyPly();
         }
@@ -100,7 +107,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
                     playerCount.ToString(), 
                     PhotonNetwork.CurrentRoom.Name, 
                     PhotonNetwork.LocalPlayer.ActorNumber, 
-                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].var.name, 
+                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].name, 
                     PhotonNetwork.GetPing(),
                     PhotonNetwork.NetworkClientState,
                     roomInfo.roundInfo.ToString());
@@ -135,7 +142,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
        
         if (Input.GetKeyDown(KeyCode.F10))
         {
-            allPlayer[1].var.alive = true;
+            allPlayer[1].alive = true;
         }
     }
     public void RecevingData(StreamDataType _type, string _dataJson)
@@ -156,8 +163,8 @@ public class ClientManager : MonoBehaviourPunCallbacks
                 allPlayer.Clear();
                 foreach (KeyValuePair<int, string> _v in _plysJson)
                 {
-                    allPlayer.Add(_v.Key, new PlayerData((PlayerVar)JsonConvert.DeserializeObject(_v.Value, typeof(PlayerVar))));
-                    allPlayer[_v.Key].var.powerUps = (Dictionary<PowerUps, int>)JsonConvert.DeserializeObject(allPlayer[_v.Key].var.powerUpsJson, typeof(Dictionary<PowerUps, int>));
+                    allPlayer.Add(_v.Key, JsonConvert.DeserializeObject<Client>(_v.Value));
+                    //allPlayer[_v.Key].GetPly().powerUps = (Dictionary<PowerUps, int>)JsonConvert.DeserializeObject(allPlayer[_v.Key].GetPly().powerUpsJson, typeof(Dictionary<PowerUps, int>));
                 }
                 scoreTable.InitialazePlayerTable();
                 break;
@@ -229,12 +236,12 @@ public class ClientManager : MonoBehaviourPunCallbacks
     {
         try
         {
-            Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId).gameObject;
-            Debug.Log("MyPly : " + Myplayer + "    " + allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId);
+            Myplayer = PhotonView.Find(allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].plyInstancePvId).gameObject;
+            Debug.Log("MyPly : " + Myplayer + "    " + allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].plyInstancePvId);
         }
         catch
         {
-            Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.palyerGOId);
+            Debug.LogErrorFormat("PhotonView: {0} not find", allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].plyInstancePvId);
         }
     }
 
@@ -243,7 +250,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
     {
         stat = new Stat();
         Vector2Int _spawnPos = new Vector2Int(UnityEngine.Random.Range(1, 8) * 2 - 1, UnityEngine. Random.Range(1, 8) * 2 - 1);
-        Pv.RPC("SpawnHere", RpcTarget.All, _spawnPos.x, _spawnPos.y);
+        //Pv.RPC("SpawnHere", RpcTarget.All, _spawnPos.x, _spawnPos.y);
         //Myplayer = PhotonNetwork.Instantiate(Pl.name, new Vector3(_spawnPos.x + 0.5f, 0.5f, _spawnPos.y + 0.5f), Quaternion.identity);
         Pv.RPC("PlayerAlive", RpcTarget.MasterClient, Pv.ViewID, true);
         CreateCubes();
@@ -297,9 +304,16 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public PlayerData LocalPly()
+    public Client LocalPly()
     {
-        return allPlayer[PhotonNetwork.LocalPlayer.ActorNumber];
+        try
+        {
+            return allPlayer[PhotonNetwork.LocalPlayer.ActorNumber];
+        }
+        catch
+        {
+            return new Client();
+        }
     }
     
 
@@ -332,4 +346,52 @@ public class Stat
 {
     public float speed = 2f;
     public int explositonSize = 1;
+}
+public class Client
+{
+    public string name = "No Name";
+    public int kill = 0;
+    public int win = 0;
+    public int hat = 0;
+    public Color32 color;
+    public bool bot;
+    public int ping;
+    public bool alive;
+    public int plyInstancePvId = -1;
+
+    public string json()
+    {
+        Dictionary<string, string> dicofVar = new Dictionary<string, string>();
+        foreach (FieldInfo field in this.GetType().GetFields())
+        {
+            //string stringValue = Convert.ToBase64String(ObjectSerialize.Serialize(field.GetValue(this)));
+            //dicofVar.Add(field.Name, stringValue);
+
+        }
+        
+        return JsonConvert.SerializeObject(this);
+    }
+    public PlayerCl GetPly()
+    {
+        GameObject plyInstance = null;
+        try
+        {
+            plyInstance = PhotonView.Find(plyInstancePvId).gameObject;
+        }
+        catch
+        {}
+        if (plyInstance != null)
+        {
+            return plyInstance.GetComponent<PlayerCl>();
+        }
+        return null;
+    }
+    public Client()
+    {
+        ClassToOrigine();
+    }
+    public void ClassToOrigine()
+    {
+        alive = false;
+    }
 }

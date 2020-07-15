@@ -12,7 +12,7 @@ public class PowerUPPanelle : MonoBehaviour
     {
         try
         {
-            Text.text = ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUP]).ToString();
+            Text.text = ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].GetPly().powerUps[PowerUP]).ToString();
         }
         catch
         {

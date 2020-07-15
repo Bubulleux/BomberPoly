@@ -281,6 +281,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gfx: {fileID: 3949681672491686037}
   robotGFX: {fileID: 1873074378439212348}
+  mysteryPower: 0
+  BombeCount: 0
 --- !u!114 &8652363595334341915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +314,7 @@ MonoBehaviour:
   OwnershipTransfer: 1
   ObservedComponents:
   - {fileID: 4643274211694408126}
+  - {fileID: 1358559492479105698}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

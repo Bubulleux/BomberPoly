@@ -18,6 +18,10 @@ public class HUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (client.allPlayer.Count == 0)
+        {
+            return;
+        }
         if (client.roomInfo.roundInfo == roundInfo.play)
         {
 
@@ -34,15 +38,21 @@ public class HUD : MonoBehaviour
             timer.color = Color.black;
         }
         int _plyAlive = 0;
-        foreach (KeyValuePair<int, PlayerData> _ply in client.allPlayer)
+        foreach (KeyValuePair<int, Client> _ply in client.allPlayer)
         {
-            if (_ply.Value.var.alive)
+            if (_ply.Value.alive)
             {
                 _plyAlive++;
             }
         }
         plyAlive.text = "Alive : " + _plyAlive;
-
-        mysteriPower.text = client.LocalPly().var.mysteryPower.ToString();
+        if (client.LocalPly().GetPly() != null)
+        {
+            mysteriPower.text = client.LocalPly().GetPly().mysteryPower.ToString();
+        }
+        else
+        {
+            mysteriPower.text = "0";
+        }
     }
 }

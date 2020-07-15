@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Newtonsoft.Json;
+using System.Reflection;
 
 public class RoomManger : MonoBehaviourPunCallbacks
 {
@@ -16,7 +17,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public StreamManager stream;
     public GameObject plyGO;
 
-    public static Dictionary<int,PlayerData> allPlayer = new Dictionary<int, PlayerData>();
+    public static Dictionary<int,Client> allPlayer = new Dictionary<int, Client>();
     public Dictionary<Vector2, BlockClass> blocks = new Dictionary<Vector2, BlockClass>();
     public RoomInfoClass roominfo = new RoomInfoClass();
 
@@ -70,9 +71,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
         if ( roominfo.roundInfo == roundInfo.play)
         {
             List<int> _plyAlive = new List<int>();
-            foreach (KeyValuePair<int, PlayerData> _v in allPlayer)
+            foreach (KeyValuePair<int, Client> _v in allPlayer)
             {
-                if (_v.Value.var.alive)
+                if (_v.Value.alive)
                 {
                     _plyAlive.Add(_v.Key);
                 }
@@ -87,7 +88,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 else
                 {
                     _winer = _plyAlive[0];
-                    allPlayer[_winer].var.win++;
+                    allPlayer[_winer].win++;
                 }
                 roominfo.roundInfo = roundInfo.preEnd;
                 StartCoroutine(EndRound(_winer));
@@ -119,9 +120,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
         StreamSendData(StreamDataType.Room);
         if (Input.GetKeyDown(KeyCode.F4))
         {
-            foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
+            foreach (KeyValuePair<int, Client> _ply in allPlayer)
             {
-                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4} (sv)", _ply.Key, _ply.Value.var.name, _ply.Value.var.ping, _ply.Value.var.palyerGOId, _ply.Value.var.bot, _ply.Value.var.alive);
+                Debug.LogFormat("Ply: {0}, Name {1}, ping {2}, GO Id {3},  bot {4} , alive {4} (sv)", _ply.Key, _ply.Value.name, _ply.Value.ping, _ply.Value.plyInstancePvId, _ply.Value.bot, _ply.Value.alive);
             }
         }
         if (Input.GetKeyDown(KeyCode.F11))
@@ -164,6 +165,12 @@ public class RoomManger : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Destroy(_go);
         }
+        foreach (KeyValuePair<int, Client> _cl in allPlayer)
+        {
+            allPlayer[_cl.Key].alive = false;
+            allPlayer[_cl.Key].plyInstancePvId = -1;
+        }
+        StreamSendData(StreamDataType.Players);
     }
     IEnumerator StartRound(bool _debug)
     {
@@ -188,14 +195,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
         if (allPlayer.Count < 2)
         {
             int _plyInt = -1;
-            PlayerVar _var = new PlayerVar()
+            Client _plyData = new Client()
             {
                 
                 name = "Bot",
                 color = Color.white,
                 bot = true
             };
-            PlayerData _plyData = new PlayerData(_var);
             try
             {
                 allPlayer.Add(_plyInt, _plyData);
@@ -218,19 +224,19 @@ public class RoomManger : MonoBehaviourPunCallbacks
         }
         yield return new WaitForSeconds(2f);
         List<int> _remove = new List<int>();
-        foreach (KeyValuePair<int, PlayerData> _ply in allPlayer)
+        foreach (KeyValuePair<int, Client> _ply in allPlayer)
         {
             //Debug.Log(_ply.Key);
-            if (IsFind(_ply.Key) || (_ply.Value.var.bot && _debug && allPlayer.Count < 3))
+            if (IsFind(_ply.Key) || (_ply.Value.bot && _debug && allPlayer.Count < 3))
             {
                 allPlayer[_ply.Key].ClassToOrigine();
                 Vector2Int _spawnPos = new Vector2Int(Random.Range(1, 8) * 2 - 1, Random.Range(1, 8) * 2 - 1);
                 Pv.RPC("SpawnHere", RpcTarget.All, _spawnPos.x, _spawnPos.y);
                 GameObject _player = PhotonNetwork.Instantiate(plyGO.name, new Vector3(_spawnPos.x + 0.5f, 0.5f, _spawnPos.y + 0.5f), Quaternion.identity);
                 _player.GetPhotonView().TransferOwnership(_ply.Key);
-                allPlayer[_ply.Key].var.alive = true;
-                allPlayer[_ply.Key].var.palyerGOId = _player.GetPhotonView().ViewID;
-                if (_ply.Value.var.bot)
+                allPlayer[_ply.Key].alive = true;
+                allPlayer[_ply.Key].plyInstancePvId = _player.GetPhotonView().ViewID;
+                if (_ply.Value.bot)
                 {
                     _player.GetComponent<PlayerControlerCl>().enabled = false;
                     _player.GetComponent<PlayerControlerCl>().cam.SetActive(false);
@@ -241,7 +247,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 _remove.Add(_ply.Key);
             }
 
-            Debug.Log("Spawn Ply:" + _ply.Key + " " + IsFind(_ply.Key) + "  " + _ply.Value.var.bot+ "   "+ allPlayer[_ply.Key].var.palyerGOId);
+            Debug.Log("Spawn Ply:" + _ply.Key + " " + IsFind(_ply.Key) + "  " + _ply.Value.bot+ "   "+ allPlayer[_ply.Key].plyInstancePvId);
         }
         foreach(int _ply in _remove)
         {
@@ -268,7 +274,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         base.OnPlayerLeftRoom(otherPlayer);
         if (roominfo.roundInfo == roundInfo.play)
         {
-            PhotonView _pv = PhotonView.Find(allPlayer[otherPlayer.ActorNumber].var.palyerGOId);
+            PhotonView _pv = PhotonView.Find(allPlayer[otherPlayer.ActorNumber].plyInstancePvId);
             _pv.TransferOwnership(PhotonNetwork.LocalPlayer);
             PhotonNetwork.Destroy(_pv.gameObject);
         }
@@ -293,14 +299,14 @@ public class RoomManger : MonoBehaviourPunCallbacks
     void TakePowerUp(int _why, int _what)
     {
         PowerUps _powerUp = (PowerUps)_what;
-        if (_powerUp == PowerUps.mistery && allPlayer[_why].var.mysteryPower == MysteryPower.MysteryPowers.none)
+        if (_powerUp == PowerUps.mistery && allPlayer[_why].GetPly().mysteryPower == MysteryPower.MysteryPowers.none)
         {
-            allPlayer[_why].var.mysteryPower = (MysteryPower.MysteryPowers)Random.Range(1, 3);
+            allPlayer[_why].GetPly().mysteryPower = (MysteryPower.MysteryPowers)Random.Range(1, 3);
         }
         else if (_powerUp != PowerUps.mistery)
         {
-            allPlayer[_why].var.powerUps[(PowerUps)_what] = (int)allPlayer[_why].var.powerUps[(PowerUps)_what] + 1;
-            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[_why].var.powerUps[PowerUps.speed], allPlayer[_why].var.powerUps[PowerUps.moreRiadusse], allPlayer[_why].var.powerUps[PowerUps.moreBombe]);
+            allPlayer[_why].GetPly().powerUps[(PowerUps)_what] = (int)allPlayer[_why].GetPly().powerUps[(PowerUps)_what] + 1;
+            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", allPlayer[_why].GetPly().powerUps[PowerUps.speed], allPlayer[_why].GetPly().powerUps[PowerUps.moreRiadusse], allPlayer[_why].GetPly().powerUps[PowerUps.moreBombe]);
         }
         StreamSendData(StreamDataType.Players);
     }
@@ -315,7 +321,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void PlayerAlive(int _view, bool _alive)
     {
-        allPlayer[_view].var.alive = _alive;
+        allPlayer[_view].alive = _alive;
         
         StreamSendData(StreamDataType.Players);
         Debug.LogFormat("Ply {0} alive: {1}", _view, _alive);
@@ -326,11 +332,11 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         if (!allPlayer.ContainsKey(_IdPly))
         {
-            PlayerVar ply = new PlayerVar();
+            Client ply = new Client();
             ply.name = _name;
             ply.hat = _hat;
             ply.color = Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f);
-            allPlayer.Add(_IdPly, new PlayerData(ply));
+            allPlayer.Add(_IdPly, ply);
             Debug.LogFormat("<color=green> Player Connect Name: {0}, hat: {1}, id: {2} </color>", _name, _hat, _IdPly);
             AllSync();
         }
@@ -339,6 +345,8 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void SpawnHere(int _x, int _y)
     {
+        return;
+        Debug.Log("chaise");
         Vector2Int _spawnPos = new Vector2Int(_x, _y);
         Vector2Int[] _blockDestroy = { _spawnPos + Vector2Int.up, _spawnPos + Vector2Int.down, _spawnPos + Vector2Int.left, _spawnPos + Vector2Int.right, _spawnPos };
         foreach (Vector2Int _posBlockDestroy in _blockDestroy)
@@ -368,7 +376,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
         }
 
-        if (!_bombeHere && allPlayer[_owner].var.BombeCount < (int)allPlayer[_owner].var.powerUps[PowerUps.moreBombe]+1)
+        if (!_bombeHere && allPlayer[_owner].GetPly().BombeCount < (int)allPlayer[_owner].GetPly().powerUps[PowerUps.moreBombe]+1)
         {
             
             StartCoroutine(TimerBombe(_bombePos,_owner, false));
@@ -377,7 +385,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public IEnumerator TimerBombe(Vector3 _bombePos, int _owner, bool _megaBombe)
     {
         GameObject _go = PhotonNetwork.Instantiate(bombe.name, _bombePos, Quaternion.identity);
-        allPlayer[_owner].var.BombeCount += 1;
+        allPlayer[_owner].GetPly().BombeCount += 1;
         StreamSendData(StreamDataType.Players);
         yield return new WaitForSeconds(3f);
         Explositon(_go, _owner, _megaBombe);
@@ -390,8 +398,11 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Vector2Int _bombPos = new Vector2Int(Mathf.FloorToInt(_pos.x), Mathf.FloorToInt(_pos.z));
         ExploseHere(_bombPos, _owner);
         Vector2Int[] _alldir = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-        allPlayer[_owner].var.BombeCount -= 1;
-        int _rad = ((int)allPlayer[_owner].var.powerUps[PowerUps.moreRiadusse] + 1);
+        if (allPlayer[_owner].alive)
+        {
+            allPlayer[_owner].GetPly().BombeCount -= 1;
+        }
+        int _rad = ((int)allPlayer[_owner].GetPly().powerUps[PowerUps.moreRiadusse] + 1);
         if (_megaBombe)
         {
             _rad = 999;
@@ -425,24 +436,24 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     private void ExploseHere(Vector2 pose, int _owner)
     {
-        foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+        foreach(KeyValuePair<int, Client> _ply in allPlayer)
         {
-            if (_ply.Value.var.alive)
+            if (_ply.Value.alive)
             {
-                Vector2Int _plypose = BM.Vec3To2int(PhotonView.Find(_ply.Value.var.palyerGOId).gameObject.transform.position);
+                Vector2Int _plypose = BM.Vec3To2int(PhotonView.Find(_ply.Value.plyInstancePvId).gameObject.transform.position);
                 if (_plypose == pose)
                 {
-                    allPlayer[_ply.Key].var.alive = false;
-                    //PhotonView.Find(_ply.Value.palyerGOId).RequestOwnership();
-                    //PhotonNetwork.Destroy(PhotonView.Find(_ply.Value.palyerGOId).gameObject);
-                    StartCoroutine(KillPlayer(_ply.Value.var.palyerGOId));
+                    allPlayer[_ply.Key].alive = false;
+                    //PhotonView.Find(_ply.Value.plyInstancePvId).RequestOwnership();
+                    //PhotonNetwork.Destroy(PhotonView.Find(_ply.Value.plyInstancePvId).gameObject);
+                    StartCoroutine(KillPlayer(_ply.Value.plyInstancePvId));
                     if (_ply.Key != _owner)
                     {
-                        allPlayer[_owner].var.kill += 1;
+                        allPlayer[_owner].kill += 1;
                     }
                     else
                     {
-                        allPlayer[_owner].var.kill -= 1;
+                        allPlayer[_owner].kill -= 1;
                     }
 
                 }
@@ -455,13 +466,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
 
     IEnumerator KillPlayer(int _ply)
     {
-        allPlayer[PhotonView.Find(_ply).OwnerActorNr].var.alive = false;
+        allPlayer[PhotonView.Find(_ply).OwnerActorNr].alive = false;
         PhotonView.Find(_ply).RequestOwnership();
         while(PhotonView.Find(_ply).Owner != PhotonNetwork.LocalPlayer)
         {
             yield return new WaitForSeconds(0.01f); 
         }
-        allPlayer[PhotonView.Find(_ply).Owner.ActorNumber].var.palyerGOId = -1;
+        allPlayer[PhotonView.Find(_ply).Owner.ActorNumber].plyInstancePvId = -1;
         PhotonNetwork.Destroy(PhotonView.Find(_ply).gameObject);
         //Pv.RPC("PlayerKilled", RpcTarget.All, _ply);
         yield return null;
@@ -478,14 +489,14 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 if (_xAct || _yAct)
                 {
                     blocks[new Vector2Int(x, y)].state = BlockState.unbrekable;
-                    foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+                    foreach(KeyValuePair<int, Client> _ply in allPlayer)
                     {
-                        if (_ply.Value.var.alive)
+                        if (_ply.Value.alive)
                         {
-                            bool _die = BM.Vec3To2int(PhotonView.Find(_ply.Value.var.palyerGOId).transform.position) == new Vector2Int(x, y);
+                            bool _die = BM.Vec3To2int(PhotonView.Find(_ply.Value.plyInstancePvId).transform.position) == new Vector2Int(x, y);
                             if (_die)
                             {
-                                StartCoroutine(KillPlayer(_ply.Value.var.palyerGOId));
+                                StartCoroutine(KillPlayer(_ply.Value.plyInstancePvId));
                             }
                         }
                     }
@@ -514,10 +525,9 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 break;
             case StreamDataType.Players:
                 Dictionary<int, string> _plysJson = new Dictionary<int, string>();
-                foreach(KeyValuePair<int, PlayerData> _ply in allPlayer)
+                foreach(KeyValuePair<int, Client> _ply in allPlayer)
                 {
-                    allPlayer[_ply.Key].var.powerUpsJson = JsonConvert.SerializeObject(allPlayer[_ply.Key].var.powerUps);
-                    _plysJson.Add(_ply.Key, JsonConvert.SerializeObject(_ply.Value.var));
+                    _plysJson.Add(_ply.Key, _ply.Value.json());
                 }
                 stream.SendData(StreamDataType.Players, JsonConvert.SerializeObject(_plysJson));
                 break;
@@ -529,52 +539,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void SendPing(int _ply, int _ping)
     {
-        allPlayer[_ply].var.ping = _ping;
+        allPlayer[_ply].ping = _ping;
         StreamSendData(StreamDataType.Players);
     }
-
-}
-
-public class PlayerData
-{
-    public PlayerVar var = new PlayerVar();
-
-    public PlayerData()
-    {
-        ClassToOrigine();
-    }
-    public PlayerData(PlayerVar _var)
-    {
-        ClassToOrigine();
-        var = _var;
-    }
-    public void ClassToOrigine()
-    {
-        var.powerUps = new Dictionary<PowerUps, int>();
-        var.powerUps.Add(PowerUps.moreBombe,0);
-        var.powerUps.Add(PowerUps.moreRiadusse,0);
-        var.powerUps.Add(PowerUps.speed,0);
-        var.BombeCount = 0;
-        var.alive = false;
-    }
-}
-
-public struct PlayerVar
-{
-    public string name;
-    public int kill;
-    public int win;
-    public int hat;
-    public int palyerGOId;
-    public Color32 color;
-    [JsonIgnore]
-    public Dictionary<PowerUps, int> powerUps;
-    public string powerUpsJson;
-    public int BombeCount;
-    public bool bot;
-    public bool alive;
-    public int ping;
-    public MysteryPower.MysteryPowers mysteryPower;
+    
 }
 public enum GameModes
 {

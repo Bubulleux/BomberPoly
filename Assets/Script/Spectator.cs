@@ -91,14 +91,14 @@ public class Spectator : MonoBehaviour
     private GameObject ply(int _index)
     {
         int _i = 0;
-        foreach(KeyValuePair<int, PlayerData> _v in ClientManager.client.allPlayer)
+        foreach(KeyValuePair<int, Client> _v in ClientManager.client.allPlayer)
         {
             if (_i == _index)
             {
-                if (_v.Value.var.alive)
+                if (_v.Value.alive)
                 {
                     Debug.Log("Ply Find " + _index);
-                    return PhotonView.Find(_v.Value.var.palyerGOId).gameObject;
+                    return _v.Value.GetPly().gameObject;
                 }
                 else
                 {

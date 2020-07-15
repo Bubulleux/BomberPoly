@@ -23,10 +23,10 @@ public class MysteryPower : MonoBehaviour
         megaBombe
     }
 
-    public bool UseMyteryPower(PlayerData _ply)
+    public bool UseMyteryPower(Client _ply)
     {
-        Debug.LogFormat("Player {0} use {1}", _ply.var.name, _ply.var.mysteryPower.ToString());
-        switch (_ply.var.mysteryPower)
+        Debug.LogFormat("Player {0} use {1}", _ply.name, _ply.GetPly().mysteryPower.ToString());
+        switch (_ply.GetPly().mysteryPower)
         {
             case MysteryPowers.tp:
                 List<Vector2> _tpPosibilitis = new List<Vector2>();

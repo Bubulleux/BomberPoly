@@ -25,7 +25,7 @@ public class PlayerControlerCl : MonoBehaviour
     }
     public void FixedUpdate()
     {
-        force = 30f + ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].var.powerUps[PowerUps.speed] * 3f);
+        force = 30f + ((int)ClientManager.client.allPlayer[PhotonNetwork.LocalPlayer.ActorNumber].GetPly().powerUps[PowerUps.speed] * 3f);
         Vector3 _goTo = new Vector3(Input.GetAxis("Horizontal") * force, 0f, Input.GetAxis("Vertical") * force);
         GetComponent<Rigidbody>().AddForce(_goTo, ForceMode.Force);
         Vector3 _newVel = GetComponent<Rigidbody>().velocity;
