@@ -2,9 +2,11 @@
 Possibiliter de modification de la room
 X	size de la map
 	traverser des bombe
-	BeforeShrinkin
-	BeetwenShrinking
-	Densiter des box
+X	BeforeShrinkin
+X	BeetwenShrinking
+X	Densiter des box
+X	tpSafe
+X	MysteryPower Density
 
 Ajout
 X	ajouter un rétrésisement de la map
@@ -38,8 +40,10 @@ X	Refaire le système de room setting
 	killLog
 X	Mistery box
 X		tp
-		Mega bombe
+X		Mega bombe
 		Mine
+
+	Verif Save Setting
 
 
 Bug:
@@ -63,10 +67,11 @@ X	Player
 
 Code Correction
 	Roommanger -> RoomManager
-	allPlayer -> Players
-	PlayerGo -> PlayerMotor
-	allBlock -> Map[,]
+X	allPlayer -> Client
+X	PlayerGo -> PlayerMotor
+X	allBlock -> Map[,]
 	remake Bombe Sys
+	Remak Room Setting
 
 Context:
 On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.
