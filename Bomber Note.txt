@@ -71,7 +71,8 @@ X	allPlayer -> Client
 X	PlayerGo -> PlayerMotor
 X	allBlock -> Map[,]
 	remake Bombe Sys
-	Remak Room Setting
+	Remake Room Setting
+	Script Accescor
 
 Context:
 On est dans un monde futuriste le bomberMan qui est devenue le BomberRobot Et une jeux téléviser Ou des robot safronte au bomber Man.

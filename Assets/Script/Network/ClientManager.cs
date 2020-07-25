@@ -150,12 +150,12 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             case StreamDataType.Map:
                 string[,] _mapJson = JsonConvert.DeserializeObject<string[,]>(_dataJson);
-                map.map = new BlockClass[_mapJson.GetLength(0), _mapJson.GetLength(0)];
+                map.map = new Box[_mapJson.GetLength(0), _mapJson.GetLength(0)];
                 for (int x = 0; x < _mapJson.GetLength(0); x++)
                 {
                     for (int y = 0; y < _mapJson.GetLength(1); y++)
                     {
-                        map.map[x,y] = JsonConvert.DeserializeObject< BlockClass>(_mapJson[x,y]);
+                        map.map[x,y] = JsonConvert.DeserializeObject<Box>(_mapJson[x,y]);
                     }
                 }
                 map.UpdateMap();
@@ -303,23 +303,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
         }
     }
     
-
-    //[PunRPC]
-    //void TakePowerUp(int _id, int _power)
-    //{
-    //    if (_id == PhotonNetwork.LocalPlayer.ActorNumber)
-    //    {
-    //        if (_power == 1)
-    //        {
-    //            stat.explositonSize += 1;
-    //        }
-    //        if (_power == 2)
-    //        {
-    //            stat.speed += 0.25f;
-    //        }
-    //    }
-        
-    //}
 
     void UpdatePlayerCount(bool AddToCount)
     {

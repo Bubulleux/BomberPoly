@@ -18,7 +18,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public GameObject plyGO;
 
     public static Dictionary<int,Client> allPlayer = new Dictionary<int, Client>();
-    public BlockClass[,] map;
+    public Box[,] map;
     public RoomInfoClass roominfo = new RoomInfoClass();
 
     public static RoomManger RoomManagerCom;

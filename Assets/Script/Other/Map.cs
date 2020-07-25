@@ -5,7 +5,7 @@ using Photon.Pun;
 
 public class Map : MonoBehaviour
 {
-    public BlockClass[,] map;
+    public Box[,] map;
     public GameObject block;
     public void RenderMap()
     {
@@ -27,44 +27,37 @@ public class Map : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             
-            GameObject _boxGo = transform.GetChild(i).gameObject;
-            BlockClass _box = map[Mathf.FloorToInt(_boxGo.transform.position.x), Mathf.FloorToInt(_boxGo.transform.position.z)];
-            GameObject gfx = _boxGo.transform.Find("GFX").gameObject;
-            GameObject powerUpGFX = _boxGo.transform.Find("PowerUP GFX").gameObject;
-            gfx.SetActive(_box.state != BlockState.destroyer);
-            _boxGo.GetComponent<BoxCollider>().isTrigger = _box.state == BlockState.destroyer;
-            gfx.GetComponent<Renderer>().material.color = _box.state == BlockState.unbrekable ? Color.black : new Color(0.5f, 0.3f, 0f, 1f);
-
-            powerUpGFX.SetActive(_box.PowerUp != 0 && _box.state == BlockState.destroyer);
-            //GetComponent<AudioSource>().enabled = _box.PowerUp != 0 && _box.state == BlockState.destroyer;
-            if (powerUpGFX.activeSelf)
+            GameObject boxGo = transform.GetChild(i).gameObject;
+            Box box = map[Mathf.FloorToInt(boxGo.transform.position.x), Mathf.FloorToInt(boxGo.transform.position.z)];
+            GameObject gfx = boxGo.transform.Find("GFX").gameObject;
+            if (gfx.activeSelf != box.GetBoxActive())
             {
-                Color color = new Color();
-                switch (_box.PowerUp)
+                gfx.SetActive(box.GetBoxActive());
+                boxGo.GetComponent<BoxCollider>().isTrigger = !box.GetBoxActive();
+            }
+            if (gfx.activeSelf)
+            {
+                if (gfx.GetComponent<Renderer>().material.color != box.GetBoxColor())
                 {
-                    case PowerUps.speed:
-                        color = Color.cyan;
-                        break;
-                    case PowerUps.moreBombe:
-                        color = Color.gray;
-                        break;
-                    case PowerUps.moreRiadusse:
-                        color = Color.red;
-                        break;
-                    case PowerUps.mistery:
-                        color = Color.green;
-                        break;
-
+                    gfx.GetComponent<Renderer>().material.color = box.GetBoxColor();
                 }
-                powerUpGFX.GetComponent<Renderer>().material.color = color;
-
+                continue;
+            }
+            GameObject powerUpGFX = boxGo.transform.Find("PowerUP GFX").gameObject;
+            if (powerUpGFX.activeSelf != box.GetPowerUpActive())
+            {
+                powerUpGFX.SetActive(box.GetPowerUpActive());
+            }
+            if (powerUpGFX.activeSelf && powerUpGFX.GetComponent<Renderer>().material.color != box.GetPowerUpColor())
+            {
+                powerUpGFX.GetComponent<Renderer>().material.color = box.GetPowerUpColor();
             }
         }
     }
-    public static BlockClass[,] GenerMap(int size, RoomInfoClass _setting)
+    public static Box[,] GenerMap(int size, RoomInfoClass _setting)
     {
         size = (size % 2 == 0) ? size + 1 : size;
-        BlockClass[,] _map = new BlockClass[size, size];
+        Box[,] _map = new Box[size, size];
 
         for (int y = 0; y < size; y++)
         {
@@ -72,7 +65,8 @@ public class Map : MonoBehaviour
             {
                 bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == size - 1) || (y == 0) || (y == size - 1);
                 //client.MakeBlock(_unbreak, Random.Range(0, 5) != 0, );
-                _map[x, y] = new BlockClass();
+                _map[x, y] = new Box();
+                _map[x, y].pos = new Vector2Int(x, y);
                 _map[x, y].state = _unbreak ? BlockState.unbrekable : Random.value > _setting.boxDensity ? BlockState.destroyer : BlockState.brekable;
                 if (_map[x, y].state != BlockState.destroyer && (Random.value < _setting.powerDensity))
                 {
@@ -109,5 +103,45 @@ public class Map : MonoBehaviour
                 }
             }
         }
+    }
+}
+
+public class Box
+{
+    public BlockState state;
+    public PowerUps PowerUp = 0;
+    public Vector2Int pos;
+    public Color GetBoxColor()
+    {
+        return state == BlockState.unbrekable ? Color.black : new Color(0.5f, 0.3f, 0f, 1f);
+    }
+    public bool GetBoxActive()
+    {
+        return state != BlockState.destroyer;
+    }
+    public Color GetPowerUpColor()
+    {
+        Color color = new Color();
+        switch (PowerUp)
+        {
+            case PowerUps.speed:
+                color = Color.cyan;
+                break;
+            case PowerUps.moreBombe:
+                color = Color.gray;
+                break;
+            case PowerUps.moreRiadusse:
+                color = Color.red;
+                break;
+            case PowerUps.mistery:
+                color = Color.green;
+                break;
+
+        }
+        return color;
+    }
+    public bool GetPowerUpActive()
+    {
+        return PowerUp != 0 && state == BlockState.destroyer;
     }
 }
