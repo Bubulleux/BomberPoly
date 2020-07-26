@@ -12,12 +12,9 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        //Debug.Log(JsonConvert.DeserializeObject<Client>(new Client().json()).name);
-        Client client = new Client();
-        foreach (FieldInfo field in client.GetType().GetFields())
-        {
-            //Debug.LogFormat("name {0} value {1}", field.Name, field.GetValue(client));
-        }
+        Box box = new Box();
+        box.pos = new Vector2Int(100, 200);
+        Debug.Log(JsonConvert.SerializeObject(box));
     }
 }
 public class Foo

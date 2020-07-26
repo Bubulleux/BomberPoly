@@ -6,6 +6,7 @@ using Photon.Pun;
 public class MysteryPower : MonoBehaviour
 {
     private PhotonView photonView;
+    private Map map;
     private RoomManger roomManager;
     private void Start()
     {
@@ -15,6 +16,7 @@ public class MysteryPower : MonoBehaviour
         }
         photonView = GetComponent<PhotonView>();
         roomManager = GameObject.Find("GameManager").GetComponent<RoomManger>();
+        map = GameObject.Find("Map").GetComponent<Map>();
     }
     public enum MysteryPowers
     {
@@ -34,7 +36,7 @@ public class MysteryPower : MonoBehaviour
                     Vector2Int tpPose;
                     do
                     {
-                        tpPose = new Vector2Int(Random.Range(0, roomManager.map.GetLength(0)), Random.Range(0, roomManager.map.GetLength(1)));
+                        tpPose = new Vector2Int(Random.Range(0, map.Maps.GetLength(0)), Random.Range(0, map.Maps.GetLength(1)));
                     } while (!(tpPose.x % 2 == 1 && tpPose.y % 2 == 1));
                     roomManager.MakeHole(tpPose.x, tpPose.y);
                     photonView.RPC("TP", RpcTarget.All, tpPose.x + 0.5f, tpPose.y + 0.5f);
@@ -43,12 +45,12 @@ public class MysteryPower : MonoBehaviour
                 else
                 {
                     List<Vector2> _tpPosibilitis = new List<Vector2>();
-                    for (int y = 0; y < GameObject.Find("GameManager").GetComponent<RoomManger>().map.GetLength(1); y++)
+                    for (int y = 0; y < map.Maps.GetLength(1); y++)
                     {
-                        for (int x = 0; x < GameObject.Find("GameManager").GetComponent<RoomManger>().map.GetLength(0); x++)
+                        for (int x = 0; x < map.Maps.GetLength(0); x++)
                         {
 
-                            if (GameObject.Find("GameManager").GetComponent<RoomManger>().map[x, y].state == BlockState.destroyer)
+                            if (map.Maps[x, y].state == BlockState.destroyer)
                             {
                                 _tpPosibilitis.Add(new Vector2(x, y));
                             }

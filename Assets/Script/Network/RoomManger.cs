@@ -326,7 +326,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Vector2Int[] _blockDestroy = { _spawnPos + Vector2Int.up, _spawnPos + Vector2Int.down, _spawnPos + Vector2Int.left, _spawnPos + Vector2Int.right, _spawnPos };
         foreach (Vector2Int _posBlockDestroy in _blockDestroy)
         {
-            if (map.GetStatus(_posBlockDestroy.x, _posBlockDestroy.y) == BlockState.brekable)
+            if (map.Maps[_posBlockDestroy.x, _posBlockDestroy.y].state == BlockState.brekable)
             {
                 map.SetStatus(_posBlockDestroy.x, _posBlockDestroy.y, BlockState.destroyer);
                 map.SetPowerUp(_posBlockDestroy.x, _posBlockDestroy.y,  PowerUps.none);

@@ -34,7 +34,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-Build/
+Build/*
 Build/BomberPoly_Data/
 Releases/
 # Visual Studio 2015/2017 cache/options directory

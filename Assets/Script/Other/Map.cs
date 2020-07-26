@@ -28,14 +28,37 @@ public class Map : MonoBehaviour, IPunObservable
     }
     public void UpdateMap()
     {
+        boxSync = new List<Box>();
+        for (int y = 0; y < map.GetLength(1); y++)
+        {
+            for (int x = 0; x < map.GetLength(0); x++)
+            {
+                boxSync.Add(map[x, y]);
+            }
+        }
         UpdateMap(boxSync);
+        boxSync = new List<Box>();
     }
     public void UpdateMap(List<Box> _boxSync)
     {
-        foreach(Box box in _boxSync)
+        for (int i = 0; i < transform.childCount; i++)
         {
-            
             GameObject boxGo = transform.GetChild(i).gameObject;
+            Box box = null;
+            bool continu = false;
+            foreach (Box _box in _boxSync)
+            {
+                if (BM.Vec3To2int(boxGo.transform.position) == _box.pos)
+                {
+                    box = _box;
+                    continu = true;
+                    break;
+                }
+            }
+            if (!continu)
+            {
+                continue;
+            }
             GameObject gfx = boxGo.transform.Find("GFX").gameObject;
             if (gfx.activeSelf != box.GetBoxActive())
             {
@@ -64,7 +87,7 @@ public class Map : MonoBehaviour, IPunObservable
     public Box[,] GenerMap(int size, RoomInfoClass _setting)
     {
         size = (size % 2 == 0) ? size + 1 : size;
-        Box[,] _map = new Box[size, size];
+        map = new Box[size, size];
 
         for (int y = 0; y < size; y++)
         {
@@ -72,24 +95,24 @@ public class Map : MonoBehaviour, IPunObservable
             {
                 bool _unbreak = ((x % 2 == 0) && (y % 2 == 0)) || (x == 0) || (x == size - 1) || (y == 0) || (y == size - 1);
                 //client.MakeBlock(_unbreak, Random.Range(0, 5) != 0, );
-                _map[x, y] = new Box();
-                _map[x, y].pos = new Vector2Int(x, y);
-                _map[x, y].state = _unbreak ? BlockState.unbrekable : Random.value > _setting.boxDensity ? BlockState.destroyer : BlockState.brekable;
-                if (_map[x, y].state != BlockState.destroyer && (Random.value < _setting.powerDensity))
+                map[x, y] = new Box();
+                map[x, y].pos = new Vector2Int(x, y);
+                map[x, y].state = _unbreak ? BlockState.unbrekable : Random.value > _setting.boxDensity ? BlockState.destroyer : BlockState.brekable;
+                if (map[x, y].state != BlockState.destroyer && (Random.value < _setting.powerDensity))
                 {
                     if (Random.value > _setting.mysteryPowerDensity)
                     {
-                        _map[x, y].PowerUp = (PowerUps)Random.Range(1, 4);
+                        map[x, y].PowerUp = (PowerUps)Random.Range(1, 4);
                     }
                     else
                     {
-                        _map[x, y].PowerUp = PowerUps.mistery;
+                        map[x, y].PowerUp = PowerUps.mistery;
                     }
                 }
+                SyncBox(x, y);
             }
         }
-        map = _map;
-        return _map;
+        return map;
     }
     
 
@@ -107,30 +130,40 @@ public class Map : MonoBehaviour, IPunObservable
                 if (map[posFloor.x, posFloor.y].PowerUp != PowerUps.none)
                 {
                     RoomManger.RoomManagerCom.TakePowerUp(_cl.Value, map[posFloor.x, posFloor.y].PowerUp);
-                    map[posFloor.x, posFloor.y].PowerUp = PowerUps.none;
+                    SetPowerUp(posFloor.x, posFloor.y, PowerUps.none);
                     RoomManger.RoomManagerCom.StreamSendData(StreamDataType.Map);
                 }
             }
+        }
+        if (boxSync.Count !=0)
+        {
+            UpdateMap(boxSync);
+            boxSync = new List<Box>();
         }
     }
     public void SetPowerUp(int x, int y, PowerUps powerUp)
     {
         map[x, y].PowerUp = powerUp;
+        SyncBox(x, y);
     }
 
     public void SetStatus(int x, int y, BlockState state)
     {
         map[x, y].state = state;
+        SyncBox(x, y);
     }
-    public PowerUps GetPowerUp(int x, int y)
+    private void SyncBox(int x, int y)
     {
-        return map[x, y].PowerUp;
+        foreach(Box box in boxSync)
+        {
+            if (box.pos == new Vector2Int(x, y))
+            {
+                return;
+            }
+        }
+        //Debug.LogFormat("X: {0} y: {1} boxSync : {2}, map: {3} ", x, y, boxSync.Count, map.Length);
+        boxSync.Add(map[x, y]);
     }
-    public BlockState GetStatus(int x, int y)
-    {
-        return map[x, y].state;
-    }
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting && PhotonNetwork.IsMasterClient)
@@ -139,6 +172,7 @@ public class Map : MonoBehaviour, IPunObservable
             {
                 return;
             }
+            UpdateMap(boxSync);
             List<string> _mapJson = new List<string>();
             foreach (Box _box in boxSync)
             {
@@ -147,6 +181,7 @@ public class Map : MonoBehaviour, IPunObservable
             stream.SendNext(ObjectSerialize.Serialize(JsonConvert.SerializeObject(_mapJson)));
             stream.SendNext(map.GetLength(0));
             stream.SendNext(map.GetLength(1));
+            boxSync = new List<Box>();
         }
         if (stream.IsReading)
         {
@@ -162,6 +197,7 @@ public class Map : MonoBehaviour, IPunObservable
                 _boxSync.Add(_box);
                 map[_box.pos.x, _box.pos.y] = _box;
             }
+            Debug.Log(map.Length);
             UpdateMap(_boxSync);
         }
     }
@@ -172,7 +208,9 @@ public class Box
 {
     public BlockState state;
     public PowerUps PowerUp = 0;
-    public Vector2Int pos;
+    public Vector2Int pos { get { return new Vector2Int(posx, posy); } set { posx = value.x; posy = value.y; } }
+    public int posx = 0;
+    public int posy = 0;
     public Color GetBoxColor()
     {
         return state == BlockState.unbrekable ? Color.black : new Color(0.5f, 0.3f, 0f, 1f);

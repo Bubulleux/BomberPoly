@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2772,6 +2772,7 @@ MonoBehaviour:
   PowerUp: {fileID: 8892186197625621832, guid: 0a70f4c76f1c23d41a4c825d3d510ac5, type: 3}
   stream: {fileID: 689871096}
   plyGO: {fileID: 6549610506780272527, guid: 44bfab08a8675bd41bbf3b476f8d7161, type: 3}
+  map: {fileID: 1736085231}
 --- !u!114 &689871093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2896,7 +2897,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 5.294e-42, y: 6e-44, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -6408,6 +6409,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1736085230}
   - component: {fileID: 1736085231}
+  - component: {fileID: 1736085232}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -6442,6 +6444,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   block: {fileID: 2196696679473280040, guid: e592b54c31a37cd4ca304e2ce9ad2951, type: 3}
+--- !u!114 &1736085232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736085229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 1736085231}
+  viewIdField: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1766795701
 GameObject:
   m_ObjectHideFlags: 0
