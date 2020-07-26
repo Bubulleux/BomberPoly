@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Newtonsoft.Json;
 
-public class Map : MonoBehaviour
+public class Map : MonoBehaviour, IPunObservable
 {
-    public Box[,] map;
+    private List<Box> boxSync = new List<Box>();
+    private Box[,] map;
+    public Box[,] Maps { get { return map; } }
+
     public GameObject block;
     public void RenderMap()
     {
@@ -24,11 +28,14 @@ public class Map : MonoBehaviour
     }
     public void UpdateMap()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        UpdateMap(boxSync);
+    }
+    public void UpdateMap(List<Box> _boxSync)
+    {
+        foreach(Box box in _boxSync)
         {
             
             GameObject boxGo = transform.GetChild(i).gameObject;
-            Box box = map[Mathf.FloorToInt(boxGo.transform.position.x), Mathf.FloorToInt(boxGo.transform.position.z)];
             GameObject gfx = boxGo.transform.Find("GFX").gameObject;
             if (gfx.activeSelf != box.GetBoxActive())
             {
@@ -54,7 +61,7 @@ public class Map : MonoBehaviour
             }
         }
     }
-    public static Box[,] GenerMap(int size, RoomInfoClass _setting)
+    public Box[,] GenerMap(int size, RoomInfoClass _setting)
     {
         size = (size % 2 == 0) ? size + 1 : size;
         Box[,] _map = new Box[size, size];
@@ -81,8 +88,10 @@ public class Map : MonoBehaviour
                 }
             }
         }
+        map = _map;
         return _map;
     }
+    
 
     private void Update()
     {
@@ -98,12 +107,65 @@ public class Map : MonoBehaviour
                 if (map[posFloor.x, posFloor.y].PowerUp != PowerUps.none)
                 {
                     RoomManger.RoomManagerCom.TakePowerUp(_cl.Value, map[posFloor.x, posFloor.y].PowerUp);
-                    RoomManger.RoomManagerCom.map[posFloor.x, posFloor.y].PowerUp = PowerUps.none;
+                    map[posFloor.x, posFloor.y].PowerUp = PowerUps.none;
                     RoomManger.RoomManagerCom.StreamSendData(StreamDataType.Map);
                 }
             }
         }
     }
+    public void SetPowerUp(int x, int y, PowerUps powerUp)
+    {
+        map[x, y].PowerUp = powerUp;
+    }
+
+    public void SetStatus(int x, int y, BlockState state)
+    {
+        map[x, y].state = state;
+    }
+    public PowerUps GetPowerUp(int x, int y)
+    {
+        return map[x, y].PowerUp;
+    }
+    public BlockState GetStatus(int x, int y)
+    {
+        return map[x, y].state;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting && PhotonNetwork.IsMasterClient)
+        {
+            if (Maps == null)
+            {
+                return;
+            }
+            List<string> _mapJson = new List<string>();
+            foreach (Box _box in boxSync)
+            {
+                _mapJson.Add(JsonConvert.SerializeObject(_box));
+            }
+            stream.SendNext(ObjectSerialize.Serialize(JsonConvert.SerializeObject(_mapJson)));
+            stream.SendNext(map.GetLength(0));
+            stream.SendNext(map.GetLength(1));
+        }
+        if (stream.IsReading)
+        {
+            List<string> _mapJson = JsonConvert.DeserializeObject<List<string>>((string)ObjectSerialize.DeSerialize((byte[])stream.ReceiveNext()));
+            if (map == null)
+            {
+                map = new Box[(int)stream.ReceiveNext(), (int)stream.ReceiveNext()];
+            }
+            List<Box> _boxSync = new List<Box>();
+            foreach(string boxJson in _mapJson)
+            {
+                Box _box = JsonConvert.DeserializeObject<Box>(boxJson);
+                _boxSync.Add(_box);
+                map[_box.pos.x, _box.pos.y] = _box;
+            }
+            UpdateMap(_boxSync);
+        }
+    }
+
 }
 
 public class Box

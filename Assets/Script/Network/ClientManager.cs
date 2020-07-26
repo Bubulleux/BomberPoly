@@ -148,18 +148,18 @@ public class ClientManager : MonoBehaviourPunCallbacks
     {
         switch (_type)
         {
-            case StreamDataType.Map:
-                string[,] _mapJson = JsonConvert.DeserializeObject<string[,]>(_dataJson);
-                map.map = new Box[_mapJson.GetLength(0), _mapJson.GetLength(0)];
-                for (int x = 0; x < _mapJson.GetLength(0); x++)
-                {
-                    for (int y = 0; y < _mapJson.GetLength(1); y++)
-                    {
-                        map.map[x,y] = JsonConvert.DeserializeObject<Box>(_mapJson[x,y]);
-                    }
-                }
-                map.UpdateMap();
-                break;
+            //case StreamDataType.Map:
+            //    string[,] _mapJson = JsonConvert.DeserializeObject<string[,]>(_dataJson);
+            //    map.Maps = new Box[_mapJson.GetLength(0), _mapJson.GetLength(0)];
+            //    for (int x = 0; x < _mapJson.GetLength(0); x++)
+            //    {
+            //        for (int y = 0; y < _mapJson.GetLength(1); y++)
+            //        {
+            //            map.Maps[x,y] = JsonConvert.DeserializeObject<Box>(_mapJson[x,y]);
+            //        }
+            //    }
+            //    map.UpdateMap();
+            //    break;
             case StreamDataType.Players:
                 Dictionary<int, string> _plysJson = (Dictionary<int, string>)JsonConvert.DeserializeObject(_dataJson, typeof(Dictionary<int, string>));
                 allPlayer.Clear();

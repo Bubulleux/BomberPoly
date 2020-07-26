@@ -16,9 +16,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
     public GameObject PowerUp;
     public StreamManager stream;
     public GameObject plyGO;
+    public Map map;
 
     public static Dictionary<int,Client> allPlayer = new Dictionary<int, Client>();
-    public Box[,] map;
+    //public Box[,] map;
     public RoomInfoClass roominfo = new RoomInfoClass();
 
     public static RoomManger RoomManagerCom;
@@ -141,7 +142,6 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         RoomManagerCom = this;
         roominfo = new RoomInfoClass();
-        map = null;
         ClearScene(roundInfo.none);
         Debug.Log("<color=red> Room's Data was clear </color>");
     }
@@ -204,7 +204,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
             }
             catch { }
         }
-        map = Map.GenerMap(roominfo.mapSize, roominfo);
+        map.GenerMap(roominfo.mapSize, roominfo);
         yield return new WaitForSeconds(2f);
         List<int> _remove = new List<int>();
         foreach (KeyValuePair<int, Client> _ply in allPlayer)
@@ -292,8 +292,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
     [PunRPC]
     void DestroyPower(int x, int y)
     {
-        map[x,y].PowerUp = 0;
-        
+        map.SetPowerUp(x, y, PowerUps.none);
         StreamSendData(StreamDataType.Map);
     }
 
@@ -327,10 +326,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
         Vector2Int[] _blockDestroy = { _spawnPos + Vector2Int.up, _spawnPos + Vector2Int.down, _spawnPos + Vector2Int.left, _spawnPos + Vector2Int.right, _spawnPos };
         foreach (Vector2Int _posBlockDestroy in _blockDestroy)
         {
-            if (map[_posBlockDestroy.x, _posBlockDestroy.y].state == BlockState.brekable)
+            if (map.GetStatus(_posBlockDestroy.x, _posBlockDestroy.y) == BlockState.brekable)
             {
-                map[_posBlockDestroy.x, _posBlockDestroy.y].state = BlockState.destroyer;
-                map[_posBlockDestroy.x, _posBlockDestroy.y].PowerUp = 0;
+                map.SetStatus(_posBlockDestroy.x, _posBlockDestroy.y, BlockState.destroyer);
+                map.SetPowerUp(_posBlockDestroy.x, _posBlockDestroy.y,  PowerUps.none);
             }
 
         }
@@ -392,13 +391,13 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 int y = _bombPos.y + _dir.y * i;
                 PhotonNetwork.Instantiate(explosion.name, new Vector3(_expPos.x + 0.5f, 0.3f, _expPos.y + 0.5f), Quaternion.identity);
                 ExploseHere(_expPos, _owner);
-                if (map[x,y].state != BlockState.destroyer)
+                if ( map.Maps[x,y].state != BlockState.destroyer)
                 {
-                    if (map[x, y].state == BlockState.brekable)
+                    if (map.Maps[x, y].state == BlockState.brekable)
                     {
-                        map[x, y].state = BlockState.destroyer;
+                        map.SetStatus(x, y, BlockState.destroyer);
                     }
-                    if (!_megaBombe || map[x, y].state == BlockState.unbrekable)
+                    if (!_megaBombe || map.Maps[x, y].state == BlockState.unbrekable)
                     {
                         break;
                     }
@@ -466,7 +465,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 bool _yAct = y <= _shrinking || y >= roominfo.mapSize - _shrinking;
                 if (_xAct || _yAct)
                 {
-                    map[x,y].state = BlockState.unbrekable;
+                    map.SetStatus(x,y, BlockState.unbrekable);
                     foreach(KeyValuePair<int, Client> _ply in allPlayer)
                     {
                         if (_ply.Value.alive)
@@ -493,21 +492,21 @@ public class RoomManger : MonoBehaviourPunCallbacks
     {
         switch (_type)
         {
-            case StreamDataType.Map:
-                if (map == null)
-                {
-                    break;
-                }
-                string[,] _mapJson = new string[map.GetLength(0), map.GetLength(1)];
-                for (int x = 0; x < map.GetLength(0); x++)
-                {
-                    for (int y = 0; y < map.GetLength(1); y++)
-                    {
-                        _mapJson[x,y] = JsonConvert.SerializeObject(map[x,y]);
-                    }
-                }
-                stream.SendData(StreamDataType.Map, JsonConvert.SerializeObject(_mapJson));
-                break;
+            //case StreamDataType.Map:
+            //    if (map.Maps == null)
+            //    {
+            //        break;
+            //    }
+            //    string[,] _mapJson = new string[map.Maps.GetLength(0), map.Maps.GetLength(1)];
+            //    for (int x = 0; x < map.Maps.GetLength(0); x++)
+            //    {
+            //        for (int y = 0; y < map.Maps.GetLength(1); y++)
+            //        {
+            //            _mapJson[x,y] = JsonConvert.SerializeObject(map.Maps[x,y]);
+            //        }
+            //    }
+            //    stream.SendData(StreamDataType.Map, JsonConvert.SerializeObject(_mapJson));
+            //    break;
             case StreamDataType.Players:
                 Dictionary<int, string> _plysJson = new Dictionary<int, string>();
                 foreach(KeyValuePair<int, Client> _ply in allPlayer)
