@@ -512,6 +512,10 @@ public class RoomManger : MonoBehaviourPunCallbacks
                 foreach(KeyValuePair<int, Client> _ply in allPlayer)
                 {
                     _plysJson.Add(_ply.Key, _ply.Value.json());
+                    if (_ply.Value.alive)
+                    {
+                        _ply.Value.GetPly().stream = true;
+                    }
                 }
                 stream.SendData(StreamDataType.Players, JsonConvert.SerializeObject(_plysJson));
                 break;

@@ -28,13 +28,6 @@ public class Music : MonoBehaviour
         _go.GetComponent<AudioSource>().clip = _sound;
         _go.GetComponent<AudioSource>().outputAudioMixerGroup = _mixer;
         _go.GetComponent<AudioSource>().Play();
-    }
-    private static IEnumerator DestroySoundS(AudioSource _as)
-    {
-        while(_as.isPlaying)
-        {
-            yield return new WaitForEndOfFrame();
-        }
-        Destroy(_as.gameObject);
+        Destroy(_go, _sound.length);
     }
 }

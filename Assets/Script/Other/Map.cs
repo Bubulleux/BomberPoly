@@ -8,14 +8,20 @@ public class Map : MonoBehaviour, IPunObservable
 {
     private List<Box> boxSync = new List<Box>();
     private Box[,] map;
-    public Box[,] Maps { get { return map; } }
+    public Box[,] Maps => map;
+    public bool MapRendered => transform.childCount != 0;
 
     public GameObject block;
+
     public void RenderMap()
     {
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("Block"))
         {
             Destroy(go);
+        }
+        if (map == null)
+        {
+            return;
         }
         for (int y = 0; y < map.GetLength(1); y++)
         {
@@ -26,19 +32,20 @@ public class Map : MonoBehaviour, IPunObservable
         }
         UpdateMap();
     }
+
     public void UpdateMap()
     {
-        boxSync = new List<Box>();
+        List<Box>  boxSyncTemp = new List<Box>();
         for (int y = 0; y < map.GetLength(1); y++)
         {
             for (int x = 0; x < map.GetLength(0); x++)
             {
-                boxSync.Add(map[x, y]);
+                boxSyncTemp.Add(map[x, y]);
             }
         }
-        UpdateMap(boxSync);
-        boxSync = new List<Box>();
+        UpdateMap(boxSyncTemp);
     }
+
     public void UpdateMap(List<Box> _boxSync)
     {
         for (int i = 0; i < transform.childCount; i++)
@@ -46,11 +53,11 @@ public class Map : MonoBehaviour, IPunObservable
             GameObject boxGo = transform.GetChild(i).gameObject;
             Box box = null;
             bool continu = false;
-            foreach (Box _box in _boxSync)
+            foreach (Box boxInBoxsync in _boxSync)
             {
-                if (BM.Vec3To2int(boxGo.transform.position) == _box.pos)
+                if (BM.Vec3To2int(boxGo.transform.position) == boxInBoxsync.pos)
                 {
-                    box = _box;
+                    box = boxInBoxsync;
                     continu = true;
                     break;
                 }
@@ -84,6 +91,7 @@ public class Map : MonoBehaviour, IPunObservable
             }
         }
     }
+
     public Box[,] GenerMap(int size, RoomInfoClass _setting)
     {
         size = (size % 2 == 0) ? size + 1 : size;
@@ -130,6 +138,7 @@ public class Map : MonoBehaviour, IPunObservable
                 if (map[posFloor.x, posFloor.y].PowerUp != PowerUps.none)
                 {
                     RoomManger.RoomManagerCom.TakePowerUp(_cl.Value, map[posFloor.x, posFloor.y].PowerUp);
+                    _cl.Value.GetPly().GetComponent<PhotonView>().RPC("PowerUpSound", RpcTarget.All, posFloor.x, posFloor.y);
                     SetPowerUp(posFloor.x, posFloor.y, PowerUps.none);
                     RoomManger.RoomManagerCom.StreamSendData(StreamDataType.Map);
                 }
@@ -138,9 +147,10 @@ public class Map : MonoBehaviour, IPunObservable
         if (boxSync.Count !=0)
         {
             UpdateMap(boxSync);
-            boxSync = new List<Box>();
+            //boxSync = new List<Box>();
         }
     }
+
     public void SetPowerUp(int x, int y, PowerUps powerUp)
     {
         map[x, y].PowerUp = powerUp;
@@ -152,6 +162,7 @@ public class Map : MonoBehaviour, IPunObservable
         map[x, y].state = state;
         SyncBox(x, y);
     }
+
     private void SyncBox(int x, int y)
     {
         foreach(Box box in boxSync)
@@ -161,9 +172,9 @@ public class Map : MonoBehaviour, IPunObservable
                 return;
             }
         }
-        //Debug.LogFormat("X: {0} y: {1} boxSync : {2}, map: {3} ", x, y, boxSync.Count, map.Length);
         boxSync.Add(map[x, y]);
     }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting && PhotonNetwork.IsMasterClient)
@@ -172,32 +183,34 @@ public class Map : MonoBehaviour, IPunObservable
             {
                 return;
             }
-            UpdateMap(boxSync);
-            List<string> _mapJson = new List<string>();
-            foreach (Box _box in boxSync)
-            {
-                _mapJson.Add(JsonConvert.SerializeObject(_box));
-            }
-            stream.SendNext(ObjectSerialize.Serialize(JsonConvert.SerializeObject(_mapJson)));
             stream.SendNext(map.GetLength(0));
             stream.SendNext(map.GetLength(1));
+            UpdateMap(boxSync);
+            List<string> boxSyncJson = new List<string>();
+            foreach (Box _box in boxSync)
+            {
+                boxSyncJson.Add(JsonConvert.SerializeObject(_box));
+            }
+            stream.SendNext(ObjectSerialize.Serialize(JsonConvert.SerializeObject(boxSyncJson)));
             boxSync = new List<Box>();
         }
         if (stream.IsReading)
         {
-            List<string> _mapJson = JsonConvert.DeserializeObject<List<string>>((string)ObjectSerialize.DeSerialize((byte[])stream.ReceiveNext()));
+            int x = (int)stream.ReceiveNext();
+            int y = (int)stream.ReceiveNext();
             if (map == null)
             {
-                map = new Box[(int)stream.ReceiveNext(), (int)stream.ReceiveNext()];
+                map = new Box[x, y];
             }
+            byte[] receving = (byte[])stream.ReceiveNext();
+            List<string> boxSyncJson = JsonConvert.DeserializeObject<List<string>>((string)ObjectSerialize.DeSerialize(receving));
             List<Box> _boxSync = new List<Box>();
-            foreach(string boxJson in _mapJson)
+            foreach (string boxJson in boxSyncJson)
             {
                 Box _box = JsonConvert.DeserializeObject<Box>(boxJson);
                 _boxSync.Add(_box);
                 map[_box.pos.x, _box.pos.y] = _box;
             }
-            Debug.Log(map.Length);
             UpdateMap(_boxSync);
         }
     }

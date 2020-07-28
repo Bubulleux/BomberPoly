@@ -42,6 +42,11 @@ public class ClientManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         client = GetComponent<ClientManager>();
+
+        if (!PhotonNetwork.InRoom)
+        {
+            SceneManager.LoadSceneAsync(1);
+        }
     }
     void Start()
     {
@@ -55,9 +60,31 @@ public class ClientManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (!PhotonNetwork.InRoom)
+        {
+            SceneManager.LoadSceneAsync(1);
+        }
         if (allPlayer.Count == 0)
         {
             return;
+        }
+        if (Input.GetKey(KeyCode.F2))
+        {
+            try
+            {
+                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} , RoomStatus {6}",
+                    playerCount.ToString(),
+                    PhotonNetwork.CurrentRoom.Name,
+                    PhotonNetwork.LocalPlayer.ActorNumber,
+                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].name,
+                    PhotonNetwork.GetPing(),
+                    PhotonNetwork.NetworkClientState,
+                    roomInfo.roundInfo.ToString());
+            }
+            catch (Exception e)
+            {
+                photonInfo.text = string.Format("Plese Wait...   Error: \"{0}\"    Connection Status: \"{1}\"", e.Message, PhotonNetwork.NetworkClientState);
+            }
         }
         if (sManag == null)
         {
@@ -76,10 +103,6 @@ public class ClientManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (!PhotonNetwork.InRoom)
-        {
-            SceneManager.LoadSceneAsync(1);
-        }
         mainCam.SetActive( Myplayer == null);
         if (Myplayer != null && roomInfo.roundInfo == roundInfo.play)
         {
@@ -98,24 +121,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             FindMyPly();
         }
-        if (Input.GetKey(KeyCode.F2))
-        {
-            try
-            {
-                photonInfo.text = string.Format("Player Count: {0}, RoomName: {1}, Clien ID: {2}, Master Client : {3}, Ping : {4} ms, Connection Stat : {5} , RoomStatus {6}", 
-                    playerCount.ToString(), 
-                    PhotonNetwork.CurrentRoom.Name, 
-                    PhotonNetwork.LocalPlayer.ActorNumber, 
-                    allPlayer[PhotonNetwork.MasterClient.ActorNumber].name, 
-                    PhotonNetwork.GetPing(),
-                    PhotonNetwork.NetworkClientState,
-                    roomInfo.roundInfo.ToString());
-            }
-            catch (Exception e)
-            {
-                photonInfo.text = string.Format("Plese Wait...   Error: \"{0}\"    Connection Status: \"{1}\"", e.Message, PhotonNetwork.NetworkClientState);
-            }
-        }
+        
         else
         {
             photonInfo.text = null;
@@ -133,6 +139,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
         {
             pauseMenu.SetActive(!pauseMenu.activeSelf);
             roomSetBut.interactable = PhotonNetwork.IsMasterClient;
+            if (roomInfo.roundInfo == roundInfo.play && LocalPly().alive)
+            {
+                LocalPly().GetPly().GetComponent<PlayerControlerCl>().enabled = !pauseMenu.activeSelf;
+            }
         }
         if (Input.GetKeyDown(KeyCode.F5))
         {
@@ -211,7 +221,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
         Debug.LogFormat("<color=red> {0} </color>", _m);
     }
-    
+    public void ForceDisconect()
+    {
+
+    }
 
     
     [PunRPC]

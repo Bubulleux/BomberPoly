@@ -64,5 +64,6 @@ MonoBehaviour:
   - SendPing
   - UsePower
   - TP
+  - PowerUpSound
   DisableAutoOpenWizard: 1
   ShowSettings: 1

@@ -9,7 +9,7 @@ public class HUD : MonoBehaviour
     public ClientManager client;
     public Text plyAlive;
     public Text timer;
-    public Text mysteriPower;
+    public Text mysteriPower; 
     void Start()
     {
         

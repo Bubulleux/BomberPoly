@@ -13,6 +13,7 @@ public class PlayerCl : MonoBehaviour, IPunObservable
     public MysteryPower.MysteryPowers mysteryPower;
     public Dictionary<PowerUps, int> powerUps = new Dictionary<PowerUps, int>();
     public int BombeCount;
+    public bool stream;
 
     private Vector3 deltaPos = new Vector3();
     private bool Initialize = false;
@@ -20,6 +21,7 @@ public class PlayerCl : MonoBehaviour, IPunObservable
     public static readonly List<string> hats = new List<string> { null, "CowboyHat", "Crown", "MagicianHat", "Mustache", "PoliceCap", "Sombrero", "VikingHelmet" };
     void Start()
     {
+        PhotonNetwork.
         powerUps = new Dictionary<PowerUps, int>();
         powerUps.Add(PowerUps.moreBombe, 0);
         powerUps.Add(PowerUps.moreRiadusse, 0);
@@ -65,19 +67,45 @@ public class PlayerCl : MonoBehaviour, IPunObservable
         }
         deltaPos = transform.position;
     }
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void OnPhotonSerializeView(PhotonStream _stream, PhotonMessageInfo info)
     {
-        if (PhotonNetwork.IsMasterClient && stream.IsWriting)
+        if (_stream.IsWriting)
         {
-            stream.SendNext(mysteryPower);
-            stream.SendNext(BombeCount);
-            stream.SendNext(JsonConvert.SerializeObject(powerUps));
+            _stream.SendNext(transform.position);
+            _stream.SendNext(transform.rotation);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                _stream.SendNext(true);
+                List<string> _jsonData = new List<string>
+                {
+                    JsonConvert.SerializeObject(mysteryPower),
+                    JsonConvert.SerializeObject(BombeCount),
+                    JsonConvert.SerializeObject(powerUps)
+                };
+                string _json = JsonConvert.SerializeObject(_jsonData);
+                Debug.Log(_json);
+                _stream.SendNext(ObjectSerialize.Serialize(_json));
+            
+            }
+            else
+            {
+                _stream.SendNext(false);
+            }
+
         }
-        if (GetComponent<PhotonView>().IsMine && stream.IsReading)
+        if (_stream.IsReading)
         {
-            mysteryPower = (MysteryPower.MysteryPowers)stream.ReceiveNext();
-            BombeCount = (int)stream.ReceiveNext();
-            powerUps = JsonConvert.DeserializeObject<Dictionary<PowerUps, int>>((string)stream.ReceiveNext());
+            transform.position = (Vector3)_stream.ReceiveNext();
+            transform.rotation = (Quaternion)_stream.ReceiveNext();
+            if ((bool)_stream.ReceiveNext())
+            {
+                List<string> _jsonData = JsonConvert.DeserializeObject<List<string>>((string)ObjectSerialize.DeSerialize((byte[])_stream.ReceiveNext()));
+                mysteryPower = JsonConvert.DeserializeObject<MysteryPower.MysteryPowers>(_jsonData[0]);
+                BombeCount = JsonConvert.DeserializeObject<int>(_jsonData[1]);
+                powerUps = JsonConvert.DeserializeObject<Dictionary<PowerUps, int>>(_jsonData[2]);
+            }
         }
     }
+
+    
 }
