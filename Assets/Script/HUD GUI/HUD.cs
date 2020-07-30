@@ -52,7 +52,7 @@ public class HUD : MonoBehaviour
         }
         else
         {
-            mysteriPower.text = "0";
+            mysteriPower.text = "";
         }
     }
 }

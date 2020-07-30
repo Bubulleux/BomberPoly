@@ -5,7 +5,7 @@ using Photon.Pun;
 using Newtonsoft.Json;
 //using Photon.Realtime;
 
-public class PlayerCl : MonoBehaviour, IPunObservable
+public class PlayerCl : MonoBehaviour
 {
     public GameObject gfx;
     public GameObject robotGFX;
@@ -21,7 +21,6 @@ public class PlayerCl : MonoBehaviour, IPunObservable
     public static readonly List<string> hats = new List<string> { null, "CowboyHat", "Crown", "MagicianHat", "Mustache", "PoliceCap", "Sombrero", "VikingHelmet" };
     void Start()
     {
-        PhotonNetwork.
         powerUps = new Dictionary<PowerUps, int>();
         powerUps.Add(PowerUps.moreBombe, 0);
         powerUps.Add(PowerUps.moreRiadusse, 0);
@@ -67,45 +66,5 @@ public class PlayerCl : MonoBehaviour, IPunObservable
         }
         deltaPos = transform.position;
     }
-    public void OnPhotonSerializeView(PhotonStream _stream, PhotonMessageInfo info)
-    {
-        if (_stream.IsWriting)
-        {
-            _stream.SendNext(transform.position);
-            _stream.SendNext(transform.rotation);
-            if (PhotonNetwork.IsMasterClient)
-            {
-                _stream.SendNext(true);
-                List<string> _jsonData = new List<string>
-                {
-                    JsonConvert.SerializeObject(mysteryPower),
-                    JsonConvert.SerializeObject(BombeCount),
-                    JsonConvert.SerializeObject(powerUps)
-                };
-                string _json = JsonConvert.SerializeObject(_jsonData);
-                Debug.Log(_json);
-                _stream.SendNext(ObjectSerialize.Serialize(_json));
-            
-            }
-            else
-            {
-                _stream.SendNext(false);
-            }
-
-        }
-        if (_stream.IsReading)
-        {
-            transform.position = (Vector3)_stream.ReceiveNext();
-            transform.rotation = (Quaternion)_stream.ReceiveNext();
-            if ((bool)_stream.ReceiveNext())
-            {
-                List<string> _jsonData = JsonConvert.DeserializeObject<List<string>>((string)ObjectSerialize.DeSerialize((byte[])_stream.ReceiveNext()));
-                mysteryPower = JsonConvert.DeserializeObject<MysteryPower.MysteryPowers>(_jsonData[0]);
-                BombeCount = JsonConvert.DeserializeObject<int>(_jsonData[1]);
-                powerUps = JsonConvert.DeserializeObject<Dictionary<PowerUps, int>>(_jsonData[2]);
-            }
-        }
-    }
-
     
 }

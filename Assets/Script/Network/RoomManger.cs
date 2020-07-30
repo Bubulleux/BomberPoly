@@ -285,7 +285,7 @@ public class RoomManger : MonoBehaviourPunCallbacks
         else if (_powerUp != PowerUps.mistery)
         {
             _cl.GetPly().powerUps[_powerUp] = (int)_cl.GetPly().powerUps[_powerUp] + 1;
-            Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", _cl.GetPly().powerUps[PowerUps.speed], _cl.GetPly().powerUps[PowerUps.moreRiadusse], _cl.GetPly().powerUps[PowerUps.moreBombe]);
+            //Debug.LogFormat("Power Up: Speed: {0}, riadius: {1}, bombe:{2}", _cl.GetPly().powerUps[PowerUps.speed], _cl.GetPly().powerUps[PowerUps.moreRiadusse], _cl.GetPly().powerUps[PowerUps.moreBombe]);
         }
         StreamSendData(StreamDataType.Players);
     }

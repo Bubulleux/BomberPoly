@@ -14,7 +14,6 @@ public class Test : MonoBehaviour
     {
         Box box = new Box();
         box.pos = new Vector2Int(100, 200);
-        Debug.Log(JsonConvert.SerializeObject(box));
     }
 }
 public class Foo

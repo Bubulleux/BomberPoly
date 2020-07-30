@@ -86,6 +86,10 @@ public class ClientManager : MonoBehaviourPunCallbacks
                 photonInfo.text = string.Format("Plese Wait...   Error: \"{0}\"    Connection Status: \"{1}\"", e.Message, PhotonNetwork.NetworkClientState);
             }
         }
+        else
+        {
+            photonInfo.text = null;
+        }
         if (sManag == null)
         {
             try
@@ -122,10 +126,7 @@ public class ClientManager : MonoBehaviourPunCallbacks
             FindMyPly();
         }
         
-        else
-        {
-            photonInfo.text = null;
-        }
+        
         try
         {
             //allPlayer = sManag.allPlayer;
